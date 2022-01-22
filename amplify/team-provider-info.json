@@ -1,23 +1,44 @@
 {
-    "prod": {
-        "awscloudformation": {
-            "AuthRoleName": "amplify-kudosweb-prod-51316-authRole",
-            "UnauthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-prod-51316-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-prod-51316-authRole",
-            "Region": "us-east-1",
-            "DeploymentBucketName": "amplify-kudosweb-prod-51316-deployment",
-            "UnauthRoleName": "amplify-kudosweb-prod-51316-unauthRole",
-            "StackName": "amplify-kudosweb-prod-51316",
-            "StackId": "arn:aws:cloudformation:us-east-1:391437285077:stack/amplify-kudosweb-prod-51316/02c14000-7b42-11ec-8b17-0a741060fa11",
-            "AmplifyAppId": "d1i50fbkdoxw25"
-        },
-        "categories": {
-            "hosting": {
-                "amplifyhosting": {
-                    "appId": "d1i50fbkdoxw25",
-                    "type": "cicd"
-                }
-            }
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-kudosweb-prod-51316-authRole",
+      "UnauthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-prod-51316-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-prod-51316-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-kudosweb-prod-51316-deployment",
+      "UnauthRoleName": "amplify-kudosweb-prod-51316-unauthRole",
+      "StackName": "amplify-kudosweb-prod-51316",
+      "StackId": "arn:aws:cloudformation:us-east-1:391437285077:stack/amplify-kudosweb-prod-51316/02c14000-7b42-11ec-8b17-0a741060fa11",
+      "AmplifyAppId": "d1i50fbkdoxw25"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1i50fbkdoxw25",
+          "type": "cicd"
         }
+      }
     }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-kudosweb-dev-55723-authRole",
+      "UnauthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-dev-55723-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-dev-55723-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-kudosweb-dev-55723-deployment",
+      "UnauthRoleName": "amplify-kudosweb-dev-55723-unauthRole",
+      "StackName": "amplify-kudosweb-dev-55723",
+      "StackId": "arn:aws:cloudformation:us-east-1:391437285077:stack/amplify-kudosweb-dev-55723/2bdc6a90-7b48-11ec-9872-0a3f429129db",
+      "AmplifyAppId": "d1i50fbkdoxw25"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1i50fbkdoxw25",
+          "type": "cicd"
+        }
+      }
+    }
+  }
 }
