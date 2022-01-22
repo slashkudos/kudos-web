@@ -1,0 +1,23 @@
+{
+    "prod": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-kudosweb-prod-51316-authRole",
+            "UnauthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-prod-51316-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::391437285077:role/amplify-kudosweb-prod-51316-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-kudosweb-prod-51316-deployment",
+            "UnauthRoleName": "amplify-kudosweb-prod-51316-unauthRole",
+            "StackName": "amplify-kudosweb-prod-51316",
+            "StackId": "arn:aws:cloudformation:us-east-1:391437285077:stack/amplify-kudosweb-prod-51316/02c14000-7b42-11ec-8b17-0a741060fa11",
+            "AmplifyAppId": "d1i50fbkdoxw25"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d1i50fbkdoxw25",
+                    "type": "cicd"
+                }
+            }
+        }
+    }
+}
