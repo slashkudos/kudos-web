@@ -1,0 +1,23 @@
+# Queries AWS Amplify to get the status of the deploy job
+
+name: Production Deployment Status
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  status:
+    name: Get Status
+    runs-on: ubuntu-latest
+    env:
+      amplify_appId: d1i50fbkdoxw25
+      amplify_env: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      - name: Get Job Status
+        shell: pwsh
+        run: ./scripts/Get-AmplifyBuildStatus.ps1 -AppId "${{ env.amplify_appId }}" -BranchName "${{ github.ref_name }}" -CommitId "${{ github.sha }}"
