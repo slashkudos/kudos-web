@@ -18,18 +18,19 @@ Param(
 )
 
 $attempts = 0
-$maxAttempts = 60
+$maxAttempts = 60 * 5 # 5 minutes
 $sleep = $false
+Write-Host "Finding deployment for commit $CommitId"
 do {
     if ($sleep -eq $true) { Start-Sleep -Seconds 1 }
-    $latestJob = $(aws amplify list-jobs --app-id $appId --branch-name $branchName --max-items 1) | ConvertFrom-Json
+    $latestJob = $(aws amplify list-jobs --app-id $AppId --branch-name $BranchName --max-items 1) | ConvertFrom-Json
     $jobSummary = $latestJob.jobSummaries[0]
-    $commitId = $jobSummary.commitId
+    $jobCommitId = $jobSummary.commitId
     $sleep = $true
     $attempts += 1
-} while ($commitId -ne $githubCommitId -and $attempts -lt $maxAttempts)
+} while ($jobCommitId -ne $CommitId -and $attempts -lt $maxAttempts)
 
-Write-Host "Found job $($jobSummary.jobId) for commit $githubCommitId"
+Write-Host "Job $($jobSummary.jobId) is deploying this commit"
 Write-Host "Waiting for job to complete..." -NoNewLine
 
 $attempts = 0
@@ -37,7 +38,7 @@ $maxAttempts = 60 * 15 # 15 minutes
 $sleep = $false
 do {
     if ($sleep -eq $true) { Start-Sleep -Seconds 1 }
-    $latestJob = $(aws amplify list-jobs --app-id $appId --branch-name $branchName --max-items 1) | ConvertFrom-Json
+    $latestJob = $(aws amplify list-jobs --app-id $AppId --branch-name $BranchName --max-items 1) | ConvertFrom-Json
     $jobSummary = $latestJob.jobSummaries[0]
     $endTime = $jobSummary.endTime
     Write-Host "." -NoNewLine
