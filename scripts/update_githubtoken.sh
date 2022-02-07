@@ -8,7 +8,7 @@ echo "Getting a new token with read:packages scope"
 gh auth login -h github.com -s read:packages
 
 echo "Copy the token below 👇🏼"
-gh auth status -t
+gh config get -h github.com oauth_token
 
 echo "Restoring the original GitHub token"
 export GITHUB_TOKEN=$GITHUB_TOKEN_OLD
