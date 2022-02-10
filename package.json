@@ -10,6 +10,7 @@
   "dependencies": {
     "@slashkudos/kudos-api": "1.0.3",
     "next": "12.0.8",
+    "pino": "^7.6.5",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
