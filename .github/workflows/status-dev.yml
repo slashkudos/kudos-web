@@ -11,7 +11,7 @@ jobs:
     name: Get Status
     runs-on: ubuntu-latest
     environment:
-      name: develop
+      name: Develop
       url: https://app-dev.slashkudos.com
     env:
       amplify_appId: d1i50fbkdoxw25
