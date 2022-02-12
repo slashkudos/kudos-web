@@ -7,9 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  status:
+  get_status:
     name: Get Status
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://app.slashkudos.com
     env:
       amplify_appId: d1i50fbkdoxw25
       amplify_env: prod
