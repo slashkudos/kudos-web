@@ -8,7 +8,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@slashkudos/kudos-api": "1.0.3",
+    "@slashkudos/kudos-api": "1.1.0",
     "next": "12.0.8",
     "pino": "^7.6.5",
     "react": "17.0.2",
