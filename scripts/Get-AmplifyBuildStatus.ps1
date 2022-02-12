@@ -42,8 +42,6 @@ Write-Host ""
 Write-Host "Job finished with status $($jobSummary.status)"
 
 if (-not $jobSummary.status -eq "SUCCEED") {
+  echo "::error::Job finished with status $($jobSummary.status)"
   exit 1
-}
-else {
-  exit 0
 }
