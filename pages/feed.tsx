@@ -1,8 +1,24 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import FeedCard from "../components/feedCard";
+import useSWR from "swr";
+import { Kudo } from "@slashkudos/kudos-api";
+import { PropsWithChildren } from "react";
 
-const Feed: NextPage = () => {
+interface Props
+  extends PropsWithChildren<{
+    kudos: Kudo[];
+    error?: any;
+  }> {}
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const Feed: NextPage<Props> = ({ kudos, error: any }) => {
+  const { data, error } = useSWR<Kudo[], any>("/api/kudos", fetcher);
+
+  if (error) return <div>Failed to load</div>;
+  if (!data) return <div>Loading...</div>;
+
   return (
     <>
       <Head>
@@ -12,7 +28,9 @@ const Feed: NextPage = () => {
       </Head>
 
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <FeedCard></FeedCard>
+        {data.map((kudo, i) => (
+          <FeedCard key={i} kudo={kudo}></FeedCard>
+        ))}
       </div>
     </>
   );
