@@ -7,13 +7,11 @@ import { PropsWithChildren } from "react";
 
 interface Props
   extends PropsWithChildren<{
-    kudos: Kudo[];
-    error?: any;
   }> {}
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const Feed: NextPage<Props> = ({ kudos, error: any }) => {
+const Feed: NextPage<Props> = () => {
   const { data, error } = useSWR<Kudo[], any>("/api/kudos", fetcher);
 
   if (error) return <div>Failed to load</div>;
