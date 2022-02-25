@@ -2,6 +2,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, XIcon, MenuIcon } from "@heroicons/react/outline";
 import { Fragment, PropsWithChildren } from "react";
 import { classNames } from "../services/utilities";
+import Image from 'next/image';
 
 const user = {
   name: "Tom Cook",
@@ -34,7 +35,7 @@ export default function Navbar({}: Props): JSX.Element {
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <img
+                    <Image
                       className="h-8 w-8"
                       src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
                       alt="Workflow"
@@ -75,7 +76,7 @@ export default function Navbar({}: Props): JSX.Element {
                       <div>
                         <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                           <span className="sr-only">Open user menu</span>
-                          <img
+                          <Image
                             className="h-8 w-8 rounded-full"
                             src={user.imageUrl}
                             alt=""
@@ -148,7 +149,7 @@ export default function Navbar({}: Props): JSX.Element {
               <div className="pt-4 pb-3 border-t border-gray-700">
                 <div className="flex items-center px-5">
                   <div className="flex-shrink-0">
-                    <img
+                    <Image
                       className="h-10 w-10 rounded-full"
                       src={user.imageUrl}
                       alt=""
