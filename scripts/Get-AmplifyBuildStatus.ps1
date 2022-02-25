@@ -41,6 +41,6 @@ do {
 Write-Host ""
 Write-Host "Job finished with status $($jobSummary.status)"
 
-if (-not $jobSummary.status -like "SUCCEED") {
+if (-not $($jobSummary.status) -like "SUCCEED") {
   exit 1
 }
