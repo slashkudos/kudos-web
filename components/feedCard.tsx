@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DataSourceApp, Kudo } from "@slashkudos/kudos-api";
 import { PropsWithChildren } from "react";
+import Image from "next/image";
 
 interface Props
   extends PropsWithChildren<{
@@ -16,15 +17,36 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
   }
 };
 
+const getOriginalQualityImageUrl = (url: string) => {
+  return url.replace("_normal.jpg", ".jpg");
+};
+
 export default function FeedCard({ kudo }: Props): JSX.Element {
   const sourceAppIcon = getSourceAppIcon(kudo);
+  const createdDate = new Date(kudo.createdAt)
+    .toLocaleString()
+    .toLocaleLowerCase();
+  const receiverImage = getOriginalQualityImageUrl(
+    "https://pbs.twimg.com/profile_images/1459685294731575304/a9_elCO4_normal.jpg"
+  );
 
   return (
     <>
       <div className="rounded overflow-hidden shadow-lg">
         <div className="px-6 py-4">
-          <div className="font-bold text-xl mb-2">{kudo.message}</div>
+          <Image
+            src={receiverImage}
+            alt={`${kudo.receiver?.username}'s profile picture`}
+            width={50}
+            height={50}
+            className="rounded-full"
+          ></Image>
+          <div className="font-bold text-xl mb-2">
+            <a href={kudo.link}>{kudo.message}</a>
+          </div>
           <p className="text-gray-700 text-base">
+            {createdDate}
+            <br />
             From: {kudo.giver?.username}
             <br />
             To: {kudo.receiver?.username}
