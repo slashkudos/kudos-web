@@ -17,17 +17,23 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
   }
 };
 
-const getOriginalQualityImage = (url: string, username?: string) => {
-  const urlOriginalQuality = url.replace("_normal.jpg", ".jpg");
+const getUserImage = (options: {
+  imageUrl: string;
+  profileUrl: string;
+  username?: string;
+}) => {
+  const urlOriginalQuality = options.imageUrl.replace("_normal.jpg", ".jpg");
   if (urlOriginalQuality) {
     return (
-      <Image
-        src={urlOriginalQuality}
-        alt={`${username}'s profile picture`}
-        width={50}
-        height={50}
-        className="rounded-full"
-      ></Image>
+      <a href={options.profileUrl}>
+        <Image
+          src={urlOriginalQuality}
+          alt={`${options.username}'s profile picture`}
+          width={50}
+          height={50}
+          className="rounded-full"
+        ></Image>
+      </a>
     );
   } else {
     return <></>;
@@ -39,14 +45,16 @@ export default function FeedCard({ kudo }: Props): JSX.Element {
   const createdDate = new Date(kudo.createdAt)
     .toLocaleString()
     .toLocaleLowerCase();
-  const receiverImage = getOriginalQualityImage(
-    kudo.receiver?.profileImageUrl ?? "",
-    kudo.receiver?.username
-  );
-  const giverImage = getOriginalQualityImage(
-    kudo.giver?.profileImageUrl ?? "",
-    kudo.giver?.username
-  );
+  const receiverImage = getUserImage({
+    imageUrl: kudo.receiver?.profileImageUrl ?? "",
+    username: kudo.receiver?.username,
+    profileUrl: `https://twitter.com/${kudo.receiver?.username}`,
+  });
+  const giverImage = getUserImage({
+    imageUrl: kudo.giver?.profileImageUrl ?? "",
+    username: kudo.giver?.username,
+    profileUrl: `https://twitter.com/${kudo.giver?.username}`,
+  });
 
   return (
     <>
