@@ -44,8 +44,8 @@ export default function FeedCard({ kudo }: Props): JSX.Element {
     kudo.receiver?.username
   );
   const giverImage = getOriginalQualityImage(
-    kudo.receiver?.profileImageUrl ?? "",
-    kudo.receiver?.username
+    kudo.giver?.profileImageUrl ?? "",
+    kudo.giver?.username
   );
 
   return (
