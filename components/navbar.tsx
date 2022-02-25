@@ -2,7 +2,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { BellIcon, XIcon, MenuIcon } from "@heroicons/react/outline";
 import { Fragment, PropsWithChildren } from "react";
 import { classNames } from "../services/utilities";
-import Image from 'next/image';
+import Image from "next/image";
 
 const user = {
   name: "Tom Cook",
@@ -39,6 +39,8 @@ export default function Navbar({}: Props): JSX.Element {
                       className="h-8 w-8"
                       src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
                       alt="Workflow"
+                      width={30}
+                      height={30}
                     />
                   </div>
                   <div className="hidden md:block">
@@ -80,6 +82,8 @@ export default function Navbar({}: Props): JSX.Element {
                             className="h-8 w-8 rounded-full"
                             src={user.imageUrl}
                             alt=""
+                            width={30}
+                            height={30}
                           />
                         </Menu.Button>
                       </div>
@@ -153,6 +157,8 @@ export default function Navbar({}: Props): JSX.Element {
                       className="h-10 w-10 rounded-full"
                       src={user.imageUrl}
                       alt=""
+                      width={30}
+                      height={30}
                     />
                   </div>
                   <div className="ml-3">

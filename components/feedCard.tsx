@@ -17,8 +17,21 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
   }
 };
 
-const getOriginalQualityImageUrl = (url: string) => {
-  return url.replace("_normal.jpg", ".jpg");
+const getOriginalQualityImage = (url: string, username?: string) => {
+  const urlOriginalQuality = url.replace("_normal.jpg", ".jpg");
+  if (urlOriginalQuality) {
+    return (
+      <Image
+        src={urlOriginalQuality}
+        alt={`${username}'s profile picture`}
+        width={50}
+        height={50}
+        className="rounded-full"
+      ></Image>
+    );
+  } else {
+    return <></>;
+  }
 };
 
 export default function FeedCard({ kudo }: Props): JSX.Element {
@@ -26,21 +39,21 @@ export default function FeedCard({ kudo }: Props): JSX.Element {
   const createdDate = new Date(kudo.createdAt)
     .toLocaleString()
     .toLocaleLowerCase();
-  const receiverImage = getOriginalQualityImageUrl(
-    "https://pbs.twimg.com/profile_images/1459685294731575304/a9_elCO4_normal.jpg"
+  const receiverImage = getOriginalQualityImage(
+    kudo.receiver?.profileImageUrl ?? "",
+    kudo.receiver?.username
+  );
+  const giverImage = getOriginalQualityImage(
+    kudo.receiver?.profileImageUrl ?? "",
+    kudo.receiver?.username
   );
 
   return (
     <>
       <div className="rounded overflow-hidden shadow-lg">
         <div className="px-6 py-4">
-          <Image
-            src={receiverImage}
-            alt={`${kudo.receiver?.username}'s profile picture`}
-            width={50}
-            height={50}
-            className="rounded-full"
-          ></Image>
+          {receiverImage}
+          {giverImage}
           <div className="font-bold text-xl mb-2">
             <a href={kudo.link}>{kudo.message}</a>
           </div>
