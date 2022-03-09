@@ -8,7 +8,7 @@ on:
 
 jobs:
   get_status:
-    name: Get Status
+    name: Get Prod Status
     runs-on: ubuntu-latest
     environment:
       name: Production
