@@ -27,6 +27,7 @@ const getUserImage = (person?: Person | null): JSX.Element => {
       <a href={profileUrl} className="pr-2">
         <Image
           src={urlOriginalQuality}
+          title={person?.username}
           alt={`${person?.username}'s profile picture`}
           width={50}
           height={50}
@@ -63,6 +64,7 @@ export default function FeedCard({ kudo }: Props): JSX.Element {
     month: "long",
     day: "numeric",
   });
+  const createdDateTime = new Date(kudo.createdAt).toLocaleString();
 
   const receiverHyperlink = getUserProfileHyperlink(kudo.receiver);
   const receiverImage = getUserImage(kudo.receiver);
@@ -80,7 +82,9 @@ export default function FeedCard({ kudo }: Props): JSX.Element {
             </div>
             <div className="pt-2">
               {receiverHyperlink} received kudos from {giverHyperlink} on{" "}
-              {createdDate}
+              <abbr className="no-underline" title={createdDateTime}>
+                {createdDate}
+              </abbr>
             </div>
           </div>
           <div className="p-6">
