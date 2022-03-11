@@ -1,4 +1,3 @@
-import { DataSourceApp } from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { KudosService } from "../../../services/kudosService";
 

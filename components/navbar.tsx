@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 import { classNames } from "../services/utilities";
 import Image from "next/image";
 
-const navigation = [{ name: "Feed", href: "/", current: true }];
+const navigation = [{ name: "Kudos", href: "/", current: true }];
 
 interface Props extends PropsWithChildren<{}> {}
 

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DataSourceApp, Kudo } from "@slashkudos/kudos-api";
+import { DataSourceApp, Kudo, Person } from "@slashkudos/kudos-api";
 import { PropsWithChildren } from "react";
 import Image from "next/image";
 
@@ -17,18 +17,17 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
   }
 };
 
-const getUserImage = (options: {
-  imageUrl: string;
-  profileUrl: string;
-  username?: string;
-}) => {
-  const urlOriginalQuality = options.imageUrl.replace("_normal.jpg", ".jpg");
+const getUserImage = (person?: Person | null): JSX.Element => {
+  const imageUrl = person?.profileImageUrl;
+  const profileUrl = getUserProfileUrl(person);
+
+  const urlOriginalQuality = imageUrl?.replace("_normal.jpg", ".jpg");
   if (urlOriginalQuality) {
     return (
-      <a href={options.profileUrl}>
+      <a href={profileUrl} className="pr-2">
         <Image
           src={urlOriginalQuality}
-          alt={`${options.username}'s profile picture`}
+          alt={`${person?.username}'s profile picture`}
           width={50}
           height={50}
           className="rounded-full"
@@ -40,40 +39,57 @@ const getUserImage = (options: {
   }
 };
 
+const getUserProfileHyperlink = (person?: Person | null): JSX.Element => {
+  const profileUrl = getUserProfileUrl(person);
+  return (
+    <a className="font-bold" href={profileUrl}>
+      {person?.username}
+    </a>
+  );
+};
+
+const getUserProfileUrl = (person?: Person | null): string | undefined => {
+  if (!person) return;
+  switch (person.dataSourceApp) {
+    case "twitter" as DataSourceApp.twitter:
+      return `https://twitter.com/${person.username}`;
+  }
+};
+
 export default function FeedCard({ kudo }: Props): JSX.Element {
   const sourceAppIcon = getSourceAppIcon(kudo);
-  const createdDate = new Date(kudo.createdAt)
-    .toLocaleString()
-    .toLocaleLowerCase();
-  const receiverImage = getUserImage({
-    imageUrl: kudo.receiver?.profileImageUrl ?? "",
-    username: kudo.receiver?.username,
-    profileUrl: `https://twitter.com/${kudo.receiver?.username}`,
+  const createdDate = new Date(kudo.createdAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
-  const giverImage = getUserImage({
-    imageUrl: kudo.giver?.profileImageUrl ?? "",
-    username: kudo.giver?.username,
-    profileUrl: `https://twitter.com/${kudo.giver?.username}`,
-  });
+
+  const receiverHyperlink = getUserProfileHyperlink(kudo.receiver);
+  const receiverImage = getUserImage(kudo.receiver);
+
+  const giverHyperlink = getUserProfileHyperlink(kudo.giver);
+  const giverImage = getUserImage(kudo.giver);
 
   return (
     <>
-      <div className="rounded overflow-hidden shadow-lg">
-        <div className="px-6 py-4">
-          {receiverImage}
-          {giverImage}
-          <div className="font-bold text-xl mb-2">
-            <a href={kudo.link}>{kudo.message}</a>
+      <div className="rounded overflow-hidden shadow-lg mb-4">
+        <div>
+          <div className="p-6 bg-gray-100 shadow">
+            <div>
+              {receiverImage} {giverImage}
+            </div>
+            <div className="pt-2">
+              {receiverHyperlink} received kudos from {giverHyperlink} on{" "}
+              {createdDate}
+            </div>
           </div>
-          <p className="text-gray-700 text-base">
-            {createdDate}
-            <br />
-            From: {kudo.giver?.username}
-            <br />
-            To: {kudo.receiver?.username}
-          </p>
+          <div className="p-6">
+            <a className="text-xl" href={kudo.link}>
+              {kudo.message}
+            </a>
+          </div>
         </div>
-        <div className="px-6 pt-4 pb-2">
+        <div className="px-6 pb-2">
           <div className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
             {sourceAppIcon}
           </div>

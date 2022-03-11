@@ -9,7 +9,6 @@ export default function Layout({ children }: Props): JSX.Element {
   return (
     <>
       <Navbar />
-      <HeaderSection />
       <div className="min-h-full">
         <main>{children}</main>
       </div>

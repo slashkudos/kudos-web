@@ -4,6 +4,7 @@ import FeedCard from "../components/feedCard";
 import useSWR from "swr";
 import { Kudo } from "@slashkudos/kudos-api";
 import { PropsWithChildren } from "react";
+import HeaderSection from "../components/headerSection";
 
 interface Props extends PropsWithChildren<{}> {}
 
@@ -23,6 +24,7 @@ const Feed: NextPage<Props> = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <HeaderSection title="Recent kudos" />
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {data.map((kudo, i) => (
           <FeedCard key={i} kudo={kudo}></FeedCard>
