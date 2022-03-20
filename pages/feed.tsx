@@ -3,18 +3,36 @@ import Head from "next/head";
 import FeedCard from "../components/feedCard";
 import useSWR from "swr";
 import { Kudo } from "@slashkudos/kudos-api";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
 import HeaderSection from "../components/headerSection";
+import UserSearchButton from "../components/userSearchButton";
+import { SearchKudosByUserResponse } from "./api/kudos/search";
 
 interface Props extends PropsWithChildren<{}> {}
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 const Feed: NextPage<Props> = () => {
-  const { data, error } = useSWR<Kudo[], any>("/api/kudos", fetcher);
+  const [dataState, setData] = useState(undefined as Kudo[] | undefined);
+  const [searchMessage, setSearchMessage] = useState(
+    undefined as string | undefined
+  );
+
+  const { data, error } = useSWR<Kudo[], any>("/api/kudos", (url: string) =>
+    fetch(url).then(async (res) => {
+      const result = (await res.json()) as Kudo[];
+      setData(result);
+      return result;
+    })
+  );
+
+  const updateData = (event: SearchKudosByUserResponse): void => {
+    if (event.error) {
+      return setSearchMessage("There was an error searching for kudos.");
+    }
+    setData(event.result);
+  };
 
   if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  if (!dataState) return <div>Loading...</div>;
 
   return (
     <>
@@ -25,8 +43,9 @@ const Feed: NextPage<Props> = () => {
       </Head>
 
       <HeaderSection title="Recent kudos" />
+      <UserSearchButton onSearchEventHandler={updateData}></UserSearchButton>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {data.map((kudo, i) => (
+        {dataState.map((kudo, i) => (
           <FeedCard key={i} kudo={kudo}></FeedCard>
         ))}
       </div>

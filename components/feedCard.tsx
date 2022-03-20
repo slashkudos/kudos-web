@@ -57,7 +57,8 @@ const getUserProfileUrl = (person?: Person | null): string | undefined => {
   }
 };
 
-export default function FeedCard({ kudo }: Props): JSX.Element {
+export default function FeedCard(props: Props): JSX.Element {
+  const kudo = props.kudo;
   const sourceAppIcon = getSourceAppIcon(kudo);
   const createdDate = new Date(kudo.createdAt).toLocaleDateString("en-US", {
     year: "numeric",

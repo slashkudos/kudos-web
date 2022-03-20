@@ -1,8 +1,4 @@
-import { PropsWithChildren } from "react";
-
-interface Props extends PropsWithChildren<{}> {}
-
-export default function Footer({}: Props): JSX.Element {
+export default function Footer(): JSX.Element {
   return (
     <>
       <footer className="text-center lg:text-left bg-gray-100 text-gray-600">

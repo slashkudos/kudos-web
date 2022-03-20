@@ -4,9 +4,7 @@ import { classNames } from "../services/utilities";
 
 const navigation = [{ name: "Kudos", href: "/", current: true }];
 
-interface Props extends PropsWithChildren<{}> {}
-
-export default function Navbar({}: Props): JSX.Element {
+export default function Navbar(): JSX.Element {
   return (
     <>
       <Disclosure as="nav" className="bg-gray-800">
