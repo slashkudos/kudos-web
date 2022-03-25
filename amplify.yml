@@ -8,6 +8,7 @@ frontend:
     build:
       commands:
         - npm run build
+        - echo "KUDOS_GRAPHQL_API_URL=$KUDOS_GRAPHQL_API_URL" >> .env
         - echo "KUDOS_GRAPHQL_API_KEY=$KUDOS_GRAPHQL_API_KEY" >> .env
   artifacts:
     baseDirectory: .next
