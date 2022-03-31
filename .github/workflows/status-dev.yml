@@ -23,6 +23,7 @@ jobs:
           ref: develop
       - name: Setup @aws-amplify/cli
         uses: philip-gai/setup-aws-amplify-cli@v1
+        with:
           cli_version: "7.6.22"
           node_version: "16.x"
           cache_dependencies: "true"
