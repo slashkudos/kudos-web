@@ -12,7 +12,7 @@ interface Props extends PropsWithChildren<{}> {
 
 export default function UserSearchButton(props: Props): JSX.Element {
   const searchForKudosByUser = async (
-    event: React.KeyboardEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>,
     onSearchEventHandler: OnSearchEventHandler
   ): Promise<void> => {
     const searchValue = (event.target as HTMLInputElement).value;
