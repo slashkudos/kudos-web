@@ -1,13 +1,12 @@
 import { Disclosure } from "@headlessui/react";
-import { PropsWithChildren } from "react";
 import { classNames } from "../services/utilities";
 
-const navigation = [{ name: "Kudos", href: "/", current: true }];
+const navigation = [{ name: "slashkudos", href: "/", current: true }];
 
 export default function Navbar(): JSX.Element {
   return (
     <>
-      <Disclosure as="nav" className="bg-gray-800">
+      <Disclosure as="nav" className="bg-primary-500">
         {({ open }) => (
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,8 +20,8 @@ export default function Navbar(): JSX.Element {
                           href={item.href}
                           className={classNames(
                             item.current
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                              ? "bg-primary-700 text-white"
+                              : "text-white hover:bg-primary-700 hover:text-white",
                             "px-3 py-2 rounded-md text-sm font-medium"
                           )}
                           aria-current={item.current ? "page" : undefined}
@@ -41,7 +40,7 @@ export default function Navbar(): JSX.Element {
                       target="_blank"
                       rel="noreferrer"
                       className={classNames(
-                        "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        "text-white hover:bg-primary-700 hover:text-white",
                         "px-3 py-2 rounded-md text-sm font-medium"
                       )}
                     >
@@ -61,8 +60,8 @@ export default function Navbar(): JSX.Element {
                     href={item.href}
                     className={classNames(
                       item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        ? "bg-primary-700 text-white"
+                        : "text-white hover:bg-primary-700 hover:text-white",
                       "block px-3 py-2 rounded-md text-base font-medium"
                     )}
                     aria-current={item.current ? "page" : undefined}
