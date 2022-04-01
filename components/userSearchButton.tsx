@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
+import { KudosBrowserService } from "../services/kudosBrowserService";
 
 type OnSearchEventHandler = (
-  searchValue?: string,
   searchResponse?: SearchKudosByUserResponse
 ) => void;
 
@@ -16,16 +16,8 @@ export default function UserSearchButton(props: Props): JSX.Element {
     onSearchEventHandler: OnSearchEventHandler
   ): Promise<void> => {
     const searchValue = (event.target as HTMLInputElement).value;
-    if (!searchValue) return onSearchEventHandler();
-    var location = window.location;
-    var baseUrl = location.protocol + "//" + location.host;
-    const url = baseUrl + "/api/kudos/search?";
-    const searchParams = new URLSearchParams({
-      username: searchValue,
-    });
-    const response = await fetch(url + searchParams.toString());
-    const data = (await response.json()) as SearchKudosByUserResponse;
-    return onSearchEventHandler(searchValue, data);
+    const searchResponse = await KudosBrowserService.searchKudos(searchValue);
+    return onSearchEventHandler(searchResponse);
   };
 
   return (
