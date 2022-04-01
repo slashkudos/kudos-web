@@ -8,12 +8,21 @@ export class Utilities {
       var baseUrl = location.protocol + "//" + location.host;
       return baseUrl;
     },
-    kudosUrlRelative: "/api/kudos",
+
+    // Relative URLs
+    get kudosUrlRelative() {
+      return "/api/kudos";
+    },
+    get kudosSearchUrlRelative() {
+      return this.kudosUrlRelative + "/search";
+    },
+
+    // Absolute URLs
     get kudosUrlAbsolute() {
       return this.baseUrl + this.kudosUrlRelative;
     },
-    get kudosSearchUrl() {
-      return this.kudosUrlAbsolute + "/search";
+    get kudosSearchUrlAbsolute() {
+      return this.baseUrl + this.kudosSearchUrlRelative;
     },
   };
 }

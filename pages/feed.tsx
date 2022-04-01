@@ -18,21 +18,29 @@ interface QueryParams {
 
 const Feed: NextPage<Props> = () => {
   const router = useRouter();
-  const queryParams: QueryParams = router.query;
+  const { search }: QueryParams = router.query;
 
   const [kudosState, setKudos] = useState(undefined as Kudo[] | undefined);
   const [searchMessageState, setSearchMessage] = useState(
     undefined as string | undefined
   );
 
-  const getKudosResponse = useSWR<Kudo[], any>(
-    Utilities.API.kudosUrlRelative,
-    (url) => KudosBrowserService.getKudosFetcher(url, setKudos)
-  );
+  let url = Utilities.API.kudosUrlRelative;
+  let fetcher = (url: string) =>
+    KudosBrowserService.getKudosFetcher(url, setKudos);
 
-  const updateData = (
-    searchResponse?: SearchKudosByUserResponse
-  ): void => {
+  if (search) {
+    const searchParams = new URLSearchParams({
+      username: search,
+    });
+    url = Utilities.API.kudosSearchUrlRelative + "?" + searchParams.toString();
+    fetcher = (url: string) =>
+      KudosBrowserService.searchKudosFetcher(url, setKudos);
+  }
+
+  const getKudosResponse = useSWR<Kudo[], any>(url, fetcher);
+
+  const updateData = (searchResponse?: SearchKudosByUserResponse): void => {
     setSearchMessage(undefined);
     if (!searchResponse || !searchResponse.result || searchResponse.error) {
       return setSearchMessage("There was an error searching for kudos.");
@@ -55,7 +63,10 @@ const Feed: NextPage<Props> = () => {
       </Head>
 
       <HeaderSection title="Recent kudos" />
-      <UserSearchButton onSearchEventHandler={updateData}></UserSearchButton>
+      <UserSearchButton
+        initialSearchValue={search}
+        onSearchEventHandler={updateData}
+      ></UserSearchButton>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {kudosState.map((kudo, i) => (
           <FeedCard key={i} kudo={kudo}></FeedCard>

@@ -17,9 +17,9 @@ export class KudosBrowserService {
     setKudosDispatcher?: Dispatch<SetStateAction<Kudo[] | undefined>>
   ): Promise<Kudo[]> => {
     const response = await fetch(url);
-    const searchResponse = (await response.json()) as Kudo[];
-    if (setKudosDispatcher) setKudosDispatcher(searchResponse);
-    return searchResponse;
+    const kudos = (await response.json()) as Kudo[];
+    if (setKudosDispatcher) setKudosDispatcher(kudos);
+    return kudos;
   };
 
   public static async searchKudos(
@@ -29,12 +29,23 @@ export class KudosBrowserService {
       const kudos = await this.getKudos();
       return { result: kudos };
     }
-    const url = Utilities.API.kudosSearchUrl + "?";
+    const url = Utilities.API.kudosSearchUrlAbsolute + "?";
     const searchParams = new URLSearchParams({
       username: searchValue,
     });
     const response = await fetch(url + searchParams.toString());
     const searchResponse = (await response.json()) as SearchKudosByUserResponse;
     return searchResponse;
+  }
+
+  public static async searchKudosFetcher(
+    url: string,
+    setKudosDispatcher?: Dispatch<SetStateAction<Kudo[] | undefined>>
+  ) {
+    const response = await fetch(url);
+    const searchResponse = (await response.json()) as SearchKudosByUserResponse;
+    const kudos = searchResponse.result || [];
+    if (setKudosDispatcher) setKudosDispatcher(kudos);
+    return kudos;
   }
 }
