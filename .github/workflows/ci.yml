@@ -17,6 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       # Setup .npmrc file to publish to GitHub Packages
+      # TODO: Figure out how to give github token access to kudos-api packages
       - name: Setup node
         uses: actions/setup-node@v2
         with:
