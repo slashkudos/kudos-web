@@ -35,7 +35,7 @@ export default function UserSearchButton(props: Props): JSX.Element {
               placeholder="User"
               aria-label="User search"
               aria-describedby="button-addon2"
-              onKeyDown={(e) =>
+              onKeyUp={(e) =>
                 searchForKudosByUser(e, props.onSearchEventHandler)
               }
             />
