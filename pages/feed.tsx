@@ -12,7 +12,7 @@ interface Props extends PropsWithChildren<{}> {}
 
 const Feed: NextPage<Props> = () => {
   const [dataState, setData] = useState(undefined as Kudo[] | undefined);
-  const [searchMessage, setSearchMessage] = useState(
+  const [searchMessageState, setSearchMessage] = useState(
     undefined as string | undefined
   );
 
@@ -23,12 +23,21 @@ const Feed: NextPage<Props> = () => {
       return result;
     })
   );
+  const originalData = data;
 
-  const updateData = (event: SearchKudosByUserResponse): void => {
-    if (event.error) {
+  const updateData = (
+    searchValue?: string,
+    searchResponse?: SearchKudosByUserResponse
+  ): void => {
+    setSearchMessage(undefined);
+    if (!searchValue) setData(originalData);
+    if (!searchResponse || searchResponse.error) {
       return setSearchMessage("There was an error searching for kudos.");
     }
-    setData(event.result);
+    setData(searchResponse.result);
+    if (searchResponse.result?.length === 0) {
+      setSearchMessage("No kudos found.");
+    }
   };
 
   if (error) return <div>Failed to load</div>;
@@ -48,6 +57,7 @@ const Feed: NextPage<Props> = () => {
         {dataState.map((kudo, i) => (
           <FeedCard key={i} kudo={kudo}></FeedCard>
         ))}
+        {searchMessageState}
       </div>
     </>
   );

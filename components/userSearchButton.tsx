@@ -1,7 +1,10 @@
 import { PropsWithChildren } from "react";
 import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
 
-type OnSearchEventHandler = (event: SearchKudosByUserResponse) => void;
+type OnSearchEventHandler = (
+  searchValue?: string,
+  searchResponse?: SearchKudosByUserResponse
+) => void;
 
 interface Props extends PropsWithChildren<{}> {
   onSearchEventHandler: OnSearchEventHandler;
@@ -12,16 +15,17 @@ export default function UserSearchButton(props: Props): JSX.Element {
     event: React.KeyboardEvent<HTMLInputElement>,
     onSearchEventHandler: OnSearchEventHandler
   ): Promise<void> => {
+    const searchValue = (event.target as HTMLInputElement).value;
+    if (!searchValue) return onSearchEventHandler();
     var location = window.location;
     var baseUrl = location.protocol + "//" + location.host;
-    const searchValue = (event.target as HTMLInputElement).value;
     const url = baseUrl + "/api/kudos/search?";
     const searchParams = new URLSearchParams({
       username: searchValue,
     });
     const response = await fetch(url + searchParams.toString());
     const data = (await response.json()) as SearchKudosByUserResponse;
-    onSearchEventHandler(data);
+    return onSearchEventHandler(searchValue, data);
   };
 
   return (
