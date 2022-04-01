@@ -4,14 +4,10 @@ import { KudosService } from "../../../services/kudosService";
 
 export default async function handler(
   _req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse<Kudo[]>
 ) {
   const client = await KudosService.getClient();
-  const kudosConnection = await client.listKudos({});
-  const kudosResult = (
-    kudosConnection.items.filter((kudo) => kudo != null) as Kudo[]
-  ).sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  res.status(200).json(kudosResult);
+  const kudosConnection = await client.listKudosByDate();
+  const kudosResult = kudosConnection.items.filter((kudo) => kudo != null) as Kudo[];
+  return res.status(200).json(kudosResult);
 }

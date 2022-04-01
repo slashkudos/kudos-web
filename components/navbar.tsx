@@ -1,22 +1,18 @@
 import { Disclosure } from "@headlessui/react";
-import { PropsWithChildren } from "react";
 import { classNames } from "../services/utilities";
-import Image from "next/image";
 
-const navigation = [{ name: "Feed", href: "/", current: true }];
+const navigation = [{ name: "slashkudos", href: "/", current: true }];
 
-interface Props extends PropsWithChildren<{}> {}
-
-export default function Navbar({}: Props): JSX.Element {
+export default function Navbar(): JSX.Element {
   return (
     <>
-      <Disclosure as="nav" className="bg-gray-800">
+      <Disclosure as="nav" className="bg-primary-500">
         {({ open }) => (
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
-                  <div className="hidden md:block">
+                  <div className="block">
                     <div className="flex items-baseline space-x-4">
                       {navigation.map((item) => (
                         <a
@@ -24,8 +20,8 @@ export default function Navbar({}: Props): JSX.Element {
                           href={item.href}
                           className={classNames(
                             item.current
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                              ? "bg-primary-700 text-white"
+                              : "text-white hover:bg-primary-700 hover:text-white",
                             "px-3 py-2 rounded-md text-sm font-medium"
                           )}
                           aria-current={item.current ? "page" : undefined}
@@ -36,7 +32,7 @@ export default function Navbar({}: Props): JSX.Element {
                     </div>
                   </div>
                 </div>
-                <div className="hidden md:block">
+                <div className="block">
                   <div className="ml-4 flex items-center md:ml-6">
                     <a
                       key={"about"}
@@ -44,7 +40,7 @@ export default function Navbar({}: Props): JSX.Element {
                       target="_blank"
                       rel="noreferrer"
                       className={classNames(
-                        "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        "text-white hover:bg-primary-700 hover:text-white",
                         "px-3 py-2 rounded-md text-sm font-medium"
                       )}
                     >
@@ -55,7 +51,7 @@ export default function Navbar({}: Props): JSX.Element {
               </div>
             </div>
 
-            <Disclosure.Panel className="md:hidden">
+            <Disclosure.Panel>
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 {navigation.map((item) => (
                   <Disclosure.Button
@@ -64,8 +60,8 @@ export default function Navbar({}: Props): JSX.Element {
                     href={item.href}
                     className={classNames(
                       item.current
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
+                        ? "bg-primary-700 text-white"
+                        : "text-white hover:bg-primary-700 hover:text-white",
                       "block px-3 py-2 rounded-md text-base font-medium"
                     )}
                     aria-current={item.current ? "page" : undefined}
