@@ -1,7 +1,10 @@
-import { KudosApiClient, KudosGraphQLConfig } from "@slashkudos/kudos-api";
+import {
+  KudosApiClient,
+  KudosGraphQLConfig,
+} from "@slashkudos/kudos-api";
 const logger = require("pino")();
 
-export class KudosService {
+export class KudosApiService {
   public static async getClient(): Promise<KudosApiClient> {
     const apiKey = process.env.KUDOS_GRAPHQL_API_KEY;
     const apiUrl = process.env.KUDOS_GRAPHQL_API_URL;

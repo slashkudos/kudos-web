@@ -1,5 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import { classNames } from "../services/utilities";
+import { Utilities } from "../services/utilities";
 
 const navigation = [{ name: "slashkudos", href: "/", current: true }];
 
@@ -18,7 +18,7 @@ export default function Navbar(): JSX.Element {
                         <a
                           key={item.name}
                           href={item.href}
-                          className={classNames(
+                          className={Utilities.classNames(
                             item.current
                               ? "bg-primary-700 text-white"
                               : "text-white hover:bg-primary-700 hover:text-white",
@@ -39,7 +39,7 @@ export default function Navbar(): JSX.Element {
                       href={"https://slashkudos.com/"}
                       target="_blank"
                       rel="noreferrer"
-                      className={classNames(
+                      className={Utilities.classNames(
                         "text-white hover:bg-primary-700 hover:text-white",
                         "px-3 py-2 rounded-md text-sm font-medium"
                       )}
@@ -58,7 +58,7 @@ export default function Navbar(): JSX.Element {
                     key={item.name}
                     as="a"
                     href={item.href}
-                    className={classNames(
+                    className={Utilities.classNames(
                       item.current
                         ? "bg-primary-700 text-white"
                         : "text-white hover:bg-primary-700 hover:text-white",

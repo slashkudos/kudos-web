@@ -1,31 +1,27 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
 import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
+import { KudosBrowserService } from "../services/kudosBrowserService";
 
 type OnSearchEventHandler = (
-  searchValue?: string,
   searchResponse?: SearchKudosByUserResponse
 ) => void;
 
 interface Props extends PropsWithChildren<{}> {
+  initialSearchValue?: string;
   onSearchEventHandler: OnSearchEventHandler;
 }
 
 export default function UserSearchButton(props: Props): JSX.Element {
+  const [searchValueState, setSearchValue] = useState(props.initialSearchValue);
+
   const searchForKudosByUser = async (
     event: React.ChangeEvent<HTMLInputElement>,
     onSearchEventHandler: OnSearchEventHandler
   ): Promise<void> => {
     const searchValue = (event.target as HTMLInputElement).value;
-    if (!searchValue) return onSearchEventHandler();
-    var location = window.location;
-    var baseUrl = location.protocol + "//" + location.host;
-    const url = baseUrl + "/api/kudos/search?";
-    const searchParams = new URLSearchParams({
-      username: searchValue,
-    });
-    const response = await fetch(url + searchParams.toString());
-    const data = (await response.json()) as SearchKudosByUserResponse;
-    return onSearchEventHandler(searchValue, data);
+    setSearchValue(searchValue);
+    const searchResponse = await KudosBrowserService.searchKudos(searchValue);
+    return onSearchEventHandler(searchResponse);
   };
 
   return (
@@ -42,6 +38,7 @@ export default function UserSearchButton(props: Props): JSX.Element {
               onChange={(e) =>
                 searchForKudosByUser(e, props.onSearchEventHandler)
               }
+              value={searchValueState}
             />
             <span
               className="input-group-text flex items-center px-3 py-1.5 text-base font-normal text-gray-700 text-center whitespace-nowrap rounded"

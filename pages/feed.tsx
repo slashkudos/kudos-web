@@ -7,41 +7,52 @@ import { PropsWithChildren, useState } from "react";
 import HeaderSection from "../components/headerSection";
 import UserSearchButton from "../components/userSearchButton";
 import { SearchKudosByUserResponse } from "./api/kudos/search";
+import { useRouter } from "next/router";
+import { Utilities } from "../services/utilities";
+import { KudosBrowserService } from "../services/kudosBrowserService";
 
 interface Props extends PropsWithChildren<{}> {}
+interface QueryParams {
+  search?: string;
+}
 
 const Feed: NextPage<Props> = () => {
-  const [dataState, setData] = useState(undefined as Kudo[] | undefined);
+  const router = useRouter();
+  const { search }: QueryParams = router.query;
+
+  const [kudosState, setKudos] = useState(undefined as Kudo[] | undefined);
   const [searchMessageState, setSearchMessage] = useState(
     undefined as string | undefined
   );
 
-  const { data, error } = useSWR<Kudo[], any>("/api/kudos", (url: string) =>
-    fetch(url).then(async (res) => {
-      const result = (await res.json()) as Kudo[];
-      setData(result);
-      return result;
-    })
-  );
-  const originalData = data;
+  let url = Utilities.API.kudosUrlRelative;
+  let fetcher = (url: string) =>
+    KudosBrowserService.getKudosFetcher(url, setKudos);
 
-  const updateData = (
-    searchValue?: string,
-    searchResponse?: SearchKudosByUserResponse
-  ): void => {
+  if (search) {
+    const searchParams = new URLSearchParams({
+      username: search,
+    });
+    url = Utilities.API.kudosSearchUrlRelative + "?" + searchParams.toString();
+    fetcher = (url: string) =>
+      KudosBrowserService.searchKudosFetcher(url, setKudos);
+  }
+
+  const getKudosResponse = useSWR<Kudo[], any>(url, fetcher);
+
+  const updateData = (searchResponse?: SearchKudosByUserResponse): void => {
     setSearchMessage(undefined);
-    if (!searchValue) setData(originalData);
-    if (!searchResponse || searchResponse.error) {
+    if (!searchResponse || !searchResponse.result || searchResponse.error) {
       return setSearchMessage("There was an error searching for kudos.");
     }
-    setData(searchResponse.result);
+    setKudos(searchResponse.result);
     if (searchResponse.result?.length === 0) {
       setSearchMessage("No kudos found.");
     }
   };
 
-  if (error) return <div>Failed to load</div>;
-  if (!dataState) return <div>Loading...</div>;
+  if (getKudosResponse.error) return <div>Failed to load</div>;
+  if (!kudosState) return <div>Loading...</div>;
 
   return (
     <>
@@ -52,9 +63,12 @@ const Feed: NextPage<Props> = () => {
       </Head>
 
       <HeaderSection title="Recent kudos" />
-      <UserSearchButton onSearchEventHandler={updateData}></UserSearchButton>
+      <UserSearchButton
+        initialSearchValue={search}
+        onSearchEventHandler={updateData}
+      ></UserSearchButton>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {dataState.map((kudo, i) => (
+        {kudosState.map((kudo, i) => (
           <FeedCard key={i} kudo={kudo}></FeedCard>
         ))}
         {searchMessageState}
