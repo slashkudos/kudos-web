@@ -26,19 +26,27 @@ do {
 } while ($jobCommitId -ne $CommitId)
 
 Write-Host "Job $($jobSummary.jobId) is deploying this commit"
-Write-Host "Waiting for job to complete..." -NoNewLine
 
 $jobId = $jobSummary.jobId
 
 do {
-  $job = $(aws amplify get-job --app-id $AppId --branch-name $BranchName --job-id $jobId) | ConvertFrom-Json
-  $jobSummary = $job.job.summary
-  $endTime = $jobSummary.endTime
-  Write-Host "." -NoNewLine
-  Start-Sleep -Seconds 1
-} while ($endTime -eq $null)
+  Write-Host "Checking job status..."
+  $jobRaw = $(aws amplify get-job --app-id $AppId --branch-name $BranchName --job-id $jobId) 
+  $job = $jobRaw | ConvertFrom-Json
+  $innerJob = $job.job
 
-Write-Host ""
+  $innerJob.steps | ForEach-Object {
+    $step = $_
+    Write-Host "$($step.stepName): $($step.status)"
+  }
+
+  $jobSummary = $innerJob.summary
+  $endTime = $jobSummary.endTime
+  if(!$endTime) {
+    Start-Sleep -Seconds 5
+  }
+} while ($null -eq $endTime)
+
 Write-Host "Job finished with status $($jobSummary.status)"
 
 if (-not $($jobSummary.status -like "SUCCEED")) {

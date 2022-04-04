@@ -3,6 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - npm install -g npm
         - echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
         - npm ci
     build:
