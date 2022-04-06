@@ -3,7 +3,7 @@ import Head from "next/head";
 import FeedCard from "../components/feedCard";
 import useSWR from "swr";
 import { Kudo } from "@slashkudos/kudos-api";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import HeaderSection from "../components/headerSection";
 import UserSearchButton from "../components/userSearchButton";
 import { SearchKudosByUserResponse } from "./api/kudos/search";
@@ -18,38 +18,53 @@ interface QueryParams {
 
 const Feed: NextPage<Props> = () => {
   const router = useRouter();
-  const { search }: QueryParams = router.query;
+
+  const queryParams = router.query as QueryParams;
+  const searchQuery = queryParams.search || "";
 
   const [kudosState, setKudos] = useState(undefined as Kudo[] | undefined);
-  const [searchMessageState, setSearchMessage] = useState(
+  const [searchDisplayMessageState, setSearchDisplayMessage] = useState(
     undefined as string | undefined
   );
 
-  let url = Utilities.API.kudosUrlRelative;
-  let fetcher = (url: string) =>
-    KudosBrowserService.getKudosFetcher(url, setKudos);
+  const firstUpdate = useRef(!searchQuery);
 
-  if (search) {
+  const [searchQueryState, setSearchQuery] = useState(searchQuery);
+
+  useEffect(() => {
+    if (!searchQuery) return;
+    firstUpdate.current = true;
+    setSearchQuery(searchQuery);
+  }, [searchQuery]);
+
+  let url = Utilities.API.kudosUrlRelative;
+  let fetcher = (url: string): Promise<Kudo[]> => {
+    if (firstUpdate.current) {
+      console.log("Loading most recent kudos...");
+      firstUpdate.current = false;
+      return KudosBrowserService.getKudosFetcher(url, setKudos);
+    } else {
+      return Promise.resolve([]);
+    }
+  };
+
+  if (searchQueryState) {
     const searchParams = new URLSearchParams({
-      username: search,
+      username: searchQueryState,
     });
     url = Utilities.API.kudosSearchUrlRelative + "?" + searchParams.toString();
-    fetcher = (url: string) =>
-      KudosBrowserService.searchKudosFetcher(url, setKudos);
+    fetcher = (url: string): Promise<Kudo[]> => {
+      if (firstUpdate.current) {
+        console.log(`Searching for kudos (query="${searchQueryState}")...`);
+        firstUpdate.current = false;
+        return KudosBrowserService.searchKudosFetcher(url, setKudos);
+      } else {
+        return Promise.resolve([]);
+      }
+    };
   }
 
   const getKudosResponse = useSWR<Kudo[], any>(url, fetcher);
-
-  const updateData = (searchResponse?: SearchKudosByUserResponse): void => {
-    setSearchMessage(undefined);
-    if (!searchResponse || !searchResponse.result || searchResponse.error) {
-      return setSearchMessage("There was an error searching for kudos.");
-    }
-    setKudos(searchResponse.result);
-    if (searchResponse.result?.length === 0) {
-      setSearchMessage("No kudos found.");
-    }
-  };
 
   if (getKudosResponse.error) return <div>Failed to load</div>;
   if (!kudosState) return <div>Loading...</div>;
@@ -64,14 +79,18 @@ const Feed: NextPage<Props> = () => {
 
       <HeaderSection title="Recent kudos" />
       <UserSearchButton
-        initialSearchValue={search}
-        onSearchEventHandler={updateData}
+        searchQuery={searchQueryState}
+        dispatchers={{
+          setSearchQueryDispatcher: setSearchQuery,
+          setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
+          setResultDispatcher: setKudos,
+        }}
       ></UserSearchButton>
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         {kudosState.map((kudo, i) => (
           <FeedCard key={i} kudo={kudo}></FeedCard>
         ))}
-        {searchMessageState}
+        {searchDisplayMessageState}
       </div>
     </>
   );
