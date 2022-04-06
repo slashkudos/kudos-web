@@ -7,7 +7,10 @@ export default async function handler(
   res: NextApiResponse<Kudo[]>
 ) {
   const client = await KudosApiService.getClient();
-  const kudosConnection = await client.listKudosByDate();
+  const kudosConnection = await client.listKudosByDate({
+    type: "Kudo",
+    limit: 25,
+  });
   const kudosResult = kudosConnection.items.filter(
     (kudo) => kudo != null
   ) as Kudo[];
