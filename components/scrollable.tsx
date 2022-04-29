@@ -17,9 +17,7 @@ interface Props
 export default function Scrollable(props: Props): JSX.Element {
   const [y, setY] = useState(window.scrollY);
   const [height, setHeight] = useState(0);
-  const ref = useRef(
-    null
-  ) as unknown as React.MutableRefObject<HTMLSpanElement>;
+  const ref = useRef(null) as unknown as React.MutableRefObject<HTMLDivElement>;
 
   useLayoutEffect(() => {
     if (!ref.current) {
@@ -51,10 +49,5 @@ export default function Scrollable(props: Props): JSX.Element {
     };
   }, [handleNavigation]);
 
-  return (
-    <span ref={ref}>
-      {height}
-      {props.children}
-    </span>
-  );
+  return <div ref={ref}>{props.children}</div>;
 }
