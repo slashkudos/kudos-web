@@ -88,16 +88,16 @@ const Feed: NextPage<Props> = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <HeaderSection title="Recent kudos" />
+      <UserSearchButton
+        searchQuery={searchQueryState}
+        dispatchers={{
+          setSearchQueryDispatcher: setSearchQuery,
+          setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
+          setResultDispatcher: setKudos,
+        }}
+      ></UserSearchButton>
       <Scrollable onScrollBottom={getKudosNextPage}>
-        <HeaderSection title="Recent kudos" />
-        <UserSearchButton
-          searchQuery={searchQueryState}
-          dispatchers={{
-            setSearchQueryDispatcher: setSearchQuery,
-            setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
-            setResultDispatcher: setKudos,
-          }}
-        ></UserSearchButton>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {kudosState.map((kudo, i) => (
             <FeedCard key={i} kudo={kudo}></FeedCard>

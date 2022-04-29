@@ -1,5 +1,4 @@
 import React, {
-  Component,
   PropsWithChildren,
   useCallback,
   useEffect,
@@ -15,33 +14,36 @@ interface Props
 
 // https://stackoverflow.com/a/62497293/4215732
 export default function Scrollable(props: Props): JSX.Element {
-  const [y, setY] = useState(window.scrollY);
-  const [height, setHeight] = useState(0);
+  const [scrollY, setScrollY] = useState(window.scrollY);
+  const [bottomHeight, setBottomHeight] = useState(0);
   const ref = useRef(null) as unknown as React.MutableRefObject<HTMLDivElement>;
 
   useLayoutEffect(() => {
     if (!ref.current) {
       return;
     }
-    console.log("Height: " + ref.current.clientHeight);
-    setHeight(ref.current.clientHeight);
-  }, [height]);
+    const bottomHeight = (ref.current.scrollHeight * 2) / 3;
+    console.log("scrollHeight: " + bottomHeight);
+    setBottomHeight(bottomHeight);
+  }, []);
 
   const handleNavigation = useCallback(
-    (e) => {
-      const window = e.currentTarget;
-      if (y > window.scrollY) {
-        console.log("scrolling up");
-      } else if (y < window.scrollY) {
-        console.log("scrolling down");
+    (e: Event) => {
+      const window = e.currentTarget as Window;
+      if (!window) return;
+      console.log("scrollY: " + window.scrollY);
+      console.log("scrollHeight: " + ref.current.scrollHeight);
+
+      setScrollY(window.scrollY);
+      if (window.scrollY >= bottomHeight) {
+        props.onScrollBottom();
       }
-      setY(window.scrollY);
     },
-    [y]
+    [bottomHeight, props]
   );
 
   useEffect(() => {
-    setY(window.scrollY);
+    setScrollY(window.scrollY);
     window.addEventListener("scroll", handleNavigation);
 
     return () => {
@@ -49,5 +51,9 @@ export default function Scrollable(props: Props): JSX.Element {
     };
   }, [handleNavigation]);
 
-  return <div ref={ref}>{props.children}</div>;
+  return (
+    <div id="scrollable" ref={ref}>
+      {props.children}
+    </div>
+  );
 }
