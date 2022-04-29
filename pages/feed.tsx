@@ -10,11 +10,16 @@ import { SearchKudosByUserResponse } from "./api/kudos/search";
 import { useRouter } from "next/router";
 import { Utilities } from "../services/utilities";
 import { KudosBrowserService } from "../services/kudosBrowserService";
+import Scrollable from "../components/scrollable";
 
 interface Props extends PropsWithChildren<{}> {}
 interface QueryParams {
   search?: string;
 }
+
+const getKudosNextPage = () => {
+  console.log("getKudosNextPage");
+};
 
 const Feed: NextPage<Props> = () => {
   const router = useRouter();
@@ -36,6 +41,12 @@ const Feed: NextPage<Props> = () => {
     firstUpdate.current = true;
     setSearchQuery(searchQuery);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (kudosState?.length === 0) {
+      setSearchDisplayMessage("No kudos found.");
+    }
+  }, [kudosState]);
 
   let url = Utilities.API.kudosUrlRelative;
   let fetcher = (url: string): Promise<Kudo[]> => {
@@ -77,21 +88,23 @@ const Feed: NextPage<Props> = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <HeaderSection title="Recent kudos" />
-      <UserSearchButton
-        searchQuery={searchQueryState}
-        dispatchers={{
-          setSearchQueryDispatcher: setSearchQuery,
-          setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
-          setResultDispatcher: setKudos,
-        }}
-      ></UserSearchButton>
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {kudosState.map((kudo, i) => (
-          <FeedCard key={i} kudo={kudo}></FeedCard>
-        ))}
-        {searchDisplayMessageState}
-      </div>
+      <Scrollable onScrollBottom={getKudosNextPage}>
+        <HeaderSection title="Recent kudos" />
+        <UserSearchButton
+          searchQuery={searchQueryState}
+          dispatchers={{
+            setSearchQueryDispatcher: setSearchQuery,
+            setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
+            setResultDispatcher: setKudos,
+          }}
+        ></UserSearchButton>
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          {kudosState.map((kudo, i) => (
+            <FeedCard key={i} kudo={kudo}></FeedCard>
+          ))}
+          {searchDisplayMessageState}
+        </div>
+      </Scrollable>
     </>
   );
 };
