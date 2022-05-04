@@ -25,15 +25,13 @@ export default function Scrollable(props: Props): JSX.Element {
 
       const bottomHeight = ref.current.scrollHeight;
 
-      logger.debug(`bottomHeight: ${bottomHeight}\nscrollY: ${window.scrollY}`);
-
       const bottomY = window.scrollY + window.innerHeight;
 
       if (bottomY >= bottomHeight) {
         props.onScrollBottom();
       }
     },
-    [props, logger]
+    [props]
   );
 
   useEffect(() => {

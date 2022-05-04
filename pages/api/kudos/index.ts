@@ -8,16 +8,18 @@ export default async function handler(
   res: NextApiResponse<ListKudosResponse>
 ) {
   const nextToken = req.query.nextToken as string | undefined;
-  
+
   const client = await KudosApiService.getClient();
   const kudosConnection = await client.listKudosByDate({
     type: "Kudo",
-    limit: 1,
-    nextToken: nextToken
+    limit: 25,
+    nextToken: nextToken,
   });
   const kudosResult = kudosConnection.items.filter(
     (kudo) => kudo != null
   ) as Kudo[];
   console.log("Kudos Connection: ", JSON.stringify(kudosConnection));
-  return res.status(200).json({ result: kudosResult, response: kudosConnection });
+  return res
+    .status(200)
+    .json({ result: kudosResult, response: kudosConnection });
 }
