@@ -19,9 +19,7 @@ export default function Scrollable(props: Props): JSX.Element {
       const window = e.currentTarget as Window;
       if (!window) return;
 
-      console.log("scrollY: " + window.scrollY);
       const bottomHeight = (ref.current.scrollHeight * 2) / 3;
-      console.log("scrollHeight: " + bottomHeight);
 
       if (window.scrollY >= bottomHeight) {
         props.onScrollBottom();
