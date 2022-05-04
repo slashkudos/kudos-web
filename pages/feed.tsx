@@ -10,6 +10,7 @@ import { Utilities } from "../services/utilities";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 import Scrollable from "../components/scrollable";
 import { ListKudosResponse } from "../models/ListKudosResponse";
+import { SearchKudosByUserResponse } from "./api/kudos/search";
 
 interface Props extends PropsWithChildren<{}> {}
 interface QueryParams {
@@ -94,18 +95,24 @@ const Feed: NextPage<Props> = () => {
       username: searchQuery,
     });
     url = Utilities.API.kudosSearchUrlRelative + "?" + searchParams.toString();
-    fetcher = (url: string): Promise<ListKudosResponse> => {
+    fetcher = async (url: string): Promise<SearchKudosByUserResponse> => {
       if (firstUpdate.current) {
         console.log(`Searching for kudos (query="${searchQuery}")...`);
         firstUpdate.current = false;
-        return KudosBrowserService.searchKudosFetcher(url, setKudosResponse);
+        return await KudosBrowserService.searchKudosFetcher(
+          url,
+          setKudosResponse
+        );
       } else {
         return Promise.resolve({});
       }
     };
   }
 
-  const listKudosResponse = useSWR<ListKudosResponse, any>(url, fetcher);
+  const listKudosResponse = useSWR<
+    ListKudosResponse | SearchKudosByUserResponse,
+    any
+  >(url, fetcher);
 
   if (listKudosResponse.error) return <div>Failed to load</div>;
   if (!kudosResponse) return <div>Loading...</div>;

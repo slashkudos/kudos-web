@@ -8,11 +8,11 @@ export default async function handler(
   res: NextApiResponse<ListKudosResponse>
 ) {
   const nextToken = req.query.nextToken as string | undefined;
+  const pageSize = req.query.pageSize
+    ? Number.parseInt(req.query.pageSize as string)
+    : 25;
 
   const client = await KudosApiService.getClient();
-  const pageSize = process.env.FEED_PAGE_SIZE
-    ? Number.parseInt(process.env.FEED_PAGE_SIZE)
-    : 25;
   const kudosConnection = await client.listKudosByDate({
     type: "Kudo",
     limit: pageSize,

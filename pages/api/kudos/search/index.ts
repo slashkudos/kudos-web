@@ -11,15 +11,15 @@ export default async function handler(
   res: NextApiResponse<SearchKudosByUserResponse>
 ) {
   const username = req.query.username as string;
+  const pageSize = req.query.pageSize
+    ? Number.parseInt(req.query.pageSize as string)
+    : 25;
   const nextToken = req.query.nextToken as string | undefined;
 
   const client = await KudosApiService.getClient();
   if (!username) {
     return res.status(400).json({ error: "username is required" });
   }
-  const pageSize = process.env.FEED_PAGE_SIZE
-    ? Number.parseInt(process.env.FEED_PAGE_SIZE)
-    : 2;
   const kudosConnection = await client.searchKudosByUser(
     username,
     pageSize,

@@ -56,7 +56,7 @@ export class KudosBrowserService {
     setKudosDispatcher?: Dispatch<
       SetStateAction<SearchKudosByUserResponse | undefined>
     >
-  ) {
+  ): Promise<SearchKudosByUserResponse> {
     const response = await fetch(url);
     const searchResponse = (await response.json()) as SearchKudosByUserResponse;
     if (setKudosDispatcher) setKudosDispatcher(searchResponse);
