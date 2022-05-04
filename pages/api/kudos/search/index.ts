@@ -1,11 +1,9 @@
-import { Kudo } from "@slashkudos/kudos-api";
+import { Kudo, ModelKudoConnection } from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { ApiResponseResult } from "../../../../models/ApiResponse";
 import { KudosApiService } from "../../../../services/kudosApiService";
 
-export interface SearchKudosByUserResponse {
-  result?: Kudo[];
-  error?: string;
-}
+export interface SearchKudosByUserResponse extends ApiResponseResult<ModelKudoConnection, Kudo[]> {}
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,5 +18,5 @@ export default async function handler(
   const kudosResult = kudosConnection.items.filter(
     (kudo) => kudo != null
   ) as Kudo[];
-  return res.status(200).json({ result: kudosResult });
+  return res.status(200).json({ result: kudosResult, response: kudosConnection });
 }

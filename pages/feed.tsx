@@ -2,15 +2,14 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import FeedCard from "../components/feedCard";
 import useSWR from "swr";
-import { Kudo } from "@slashkudos/kudos-api";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import HeaderSection from "../components/headerSection";
 import UserSearchButton from "../components/userSearchButton";
-import { SearchKudosByUserResponse } from "./api/kudos/search";
 import { useRouter } from "next/router";
 import { Utilities } from "../services/utilities";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 import Scrollable from "../components/scrollable";
+import { ListKudosResponse } from "../models/ListKudosResponse";
 
 interface Props extends PropsWithChildren<{}> {}
 interface QueryParams {
@@ -27,9 +26,14 @@ const Feed: NextPage<Props> = () => {
   const queryParams = router.query as QueryParams;
   const searchQuery = queryParams.search || "";
 
-  const [kudosState, setKudos] = useState(undefined as Kudo[] | undefined);
+  const [kudosConnection, setKudosConnection] = useState(
+    undefined as ListKudosResponse | undefined
+  );
   const [searchDisplayMessageState, setSearchDisplayMessage] = useState(
     undefined as string | undefined
+  );
+  const [nextToken, setNextToken] = useState(
+    undefined as string | null | undefined
   );
 
   const firstUpdate = useRef(!searchQuery);
@@ -43,19 +47,20 @@ const Feed: NextPage<Props> = () => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (kudosState?.length === 0) {
+    if (kudosConnection?.result?.length === 0) {
       setSearchDisplayMessage("No kudos found.");
     }
-  }, [kudosState]);
+    setNextToken(kudosConnection?.response?.nextToken);
+  }, [kudosConnection]);
 
   let url = Utilities.API.kudosUrlRelative;
-  let fetcher = (url: string): Promise<Kudo[]> => {
+  let fetcher = (url: string): Promise<ListKudosResponse> => {
     if (firstUpdate.current) {
       console.log("Loading most recent kudos...");
       firstUpdate.current = false;
-      return KudosBrowserService.getKudosFetcher(url, setKudos);
+      return KudosBrowserService.getKudosFetcher(url, setKudosConnection);
     } else {
-      return Promise.resolve([]);
+      return Promise.resolve({});
     }
   };
 
@@ -64,21 +69,21 @@ const Feed: NextPage<Props> = () => {
       username: searchQueryState,
     });
     url = Utilities.API.kudosSearchUrlRelative + "?" + searchParams.toString();
-    fetcher = (url: string): Promise<Kudo[]> => {
+    fetcher = (url: string): Promise<ListKudosResponse> => {
       if (firstUpdate.current) {
         console.log(`Searching for kudos (query="${searchQueryState}")...`);
         firstUpdate.current = false;
-        return KudosBrowserService.searchKudosFetcher(url, setKudos);
+        return KudosBrowserService.searchKudosFetcher(url, setKudosConnection);
       } else {
-        return Promise.resolve([]);
+        return Promise.resolve({});
       }
     };
   }
 
-  const getKudosResponse = useSWR<Kudo[], any>(url, fetcher);
+  const listKudosResponse = useSWR<ListKudosResponse, any>(url, fetcher);
 
-  if (getKudosResponse.error) return <div>Failed to load</div>;
-  if (!kudosState) return <div>Loading...</div>;
+  if (listKudosResponse.error) return <div>Failed to load</div>;
+  if (!kudosConnection) return <div>Loading...</div>;
 
   return (
     <>
@@ -94,14 +99,15 @@ const Feed: NextPage<Props> = () => {
         dispatchers={{
           setSearchQueryDispatcher: setSearchQuery,
           setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
-          setResultDispatcher: setKudos,
+          setResultDispatcher: setKudosConnection,
         }}
       ></UserSearchButton>
       <Scrollable onScrollBottom={getKudosNextPage}>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          {kudosState.map((kudo, i) => (
-            <FeedCard key={i} kudo={kudo}></FeedCard>
-          ))}
+          {kudosConnection?.result?.map((kudo, i) => {
+            if (!kudo) return <></>;
+            return <FeedCard key={i} kudo={kudo}></FeedCard>;
+          })}
           {searchDisplayMessageState}
         </div>
       </Scrollable>

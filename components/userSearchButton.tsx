@@ -1,6 +1,5 @@
-import { Kudo } from "@slashkudos/kudos-api";
 import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
-import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
+import { ListKudosResponse } from "../models/ListKudosResponse";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 
 interface Props extends PropsWithChildren<{}> {
@@ -10,7 +9,9 @@ interface Props extends PropsWithChildren<{}> {
     setSearchDisplayMessageDispatcher?: Dispatch<
       SetStateAction<string | undefined>
     >;
-    setResultDispatcher: Dispatch<SetStateAction<Kudo[] | undefined>>;
+    setResultDispatcher: Dispatch<
+      SetStateAction<ListKudosResponse | undefined>
+    >;
   };
 }
 
@@ -44,7 +45,7 @@ export default function UserSearchButton(props: Props): JSX.Element {
         )
       );
     }
-    setResultDispatcher(searchResponse.result);
+    setResultDispatcher(searchResponse);
   };
 
   return (
