@@ -7,9 +7,18 @@ const logger = require("pino")();
 // DO NOT use KudosApiClient or KudosGraphQLConfig, for that use the KudosApiService.ts
 // You will get error related to the fs module missing
 export class KudosBrowserService {
-  public static async getKudos(): Promise<ListKudosResponse> {
-    const url = Utilities.API.kudosUrlAbsolute;
-    return await KudosBrowserService.getKudosFetcher(url);
+  public static async getKudos(
+    nextToken?: string | null
+  ): Promise<ListKudosResponse> {
+    const apiUrl = Utilities.API.kudosUrlAbsolute;
+    let fullUrl = apiUrl;
+    if (nextToken) {
+      const searchParams = new URLSearchParams({
+        nextToken: nextToken,
+      });
+      fullUrl += "?" + searchParams.toString();
+    }
+    return await KudosBrowserService.getKudosFetcher(fullUrl);
   }
 
   public static getKudosFetcher = async (
@@ -24,7 +33,7 @@ export class KudosBrowserService {
 
   public static async searchKudos(
     searchValue: string
-  ): Promise<SearchKudosByUserResponse | undefined> {
+  ): Promise<SearchKudosByUserResponse> {
     if (!searchValue) {
       const response = await this.getKudos();
       return response;
@@ -33,14 +42,14 @@ export class KudosBrowserService {
     const searchParams = new URLSearchParams({
       username: searchValue,
     });
-    const response = await fetch(url + searchParams.toString());
-    const searchResponse = (await response.json()) as SearchKudosByUserResponse;
-    return searchResponse;
+    return await this.searchKudosFetcher(url + searchParams.toString());
   }
 
   public static async searchKudosFetcher(
     url: string,
-    setKudosDispatcher?: Dispatch<SetStateAction<SearchKudosByUserResponse | undefined>>
+    setKudosDispatcher?: Dispatch<
+      SetStateAction<SearchKudosByUserResponse | undefined>
+    >
   ) {
     const response = await fetch(url);
     const searchResponse = (await response.json()) as SearchKudosByUserResponse;

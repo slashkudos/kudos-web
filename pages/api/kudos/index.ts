@@ -4,16 +4,20 @@ import { ListKudosResponse } from "../../../models/ListKudosResponse";
 import { KudosApiService } from "../../../services/kudosApiService";
 
 export default async function handler(
-  _req: NextApiRequest,
+  req: NextApiRequest,
   res: NextApiResponse<ListKudosResponse>
 ) {
+  const nextToken = req.query.nextToken as string | undefined;
+  
   const client = await KudosApiService.getClient();
   const kudosConnection = await client.listKudosByDate({
     type: "Kudo",
-    limit: 25,
+    limit: 1,
+    nextToken: nextToken
   });
   const kudosResult = kudosConnection.items.filter(
     (kudo) => kudo != null
   ) as Kudo[];
+  console.log("Kudos Connection: ", JSON.stringify(kudosConnection));
   return res.status(200).json({ result: kudosResult, response: kudosConnection });
 }
