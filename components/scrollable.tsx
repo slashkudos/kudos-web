@@ -11,7 +11,6 @@ interface Props
     onScrollBottom: () => void;
   }> {}
 
-// https://stackoverflow.com/a/62497293/4215732
 export default function Scrollable(props: Props): JSX.Element {
   const logger: pino.Logger = pino({
     level: process.env.LOG_LEVEL || "info",
