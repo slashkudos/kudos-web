@@ -21,7 +21,6 @@ export default async function handler(
   const kudosResult = kudosConnection.items.filter(
     (kudo) => kudo != null
   ) as Kudo[];
-  console.log("Kudos Connection: ", JSON.stringify(kudosConnection));
   return res
     .status(200)
     .json({ result: kudosResult, response: kudosConnection });

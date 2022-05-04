@@ -74,7 +74,6 @@ const Feed: NextPage<Props> = () => {
       setSearchDisplayMessage("No kudos found.");
     }
     setNextToken(kudosResponse?.response?.nextToken);
-    console.log("nextToken: ", kudosResponse?.response?.nextToken);
   }, [kudosResponse]);
 
   let url = Utilities.API.kudosUrlRelative;
