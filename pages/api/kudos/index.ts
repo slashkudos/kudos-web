@@ -10,9 +10,12 @@ export default async function handler(
   const nextToken = req.query.nextToken as string | undefined;
 
   const client = await KudosApiService.getClient();
+  const pageSize = process.env.FEED_PAGE_SIZE
+    ? Number.parseInt(process.env.FEED_PAGE_SIZE)
+    : 25;
   const kudosConnection = await client.listKudosByDate({
     type: "Kudo",
-    limit: 25,
+    limit: pageSize,
     nextToken: nextToken,
   });
   const kudosResult = kudosConnection.items.filter(
