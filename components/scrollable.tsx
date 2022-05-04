@@ -1,3 +1,4 @@
+import pino from "pino";
 import React, {
   PropsWithChildren,
   useCallback,
@@ -12,6 +13,10 @@ interface Props
 
 // https://stackoverflow.com/a/62497293/4215732
 export default function Scrollable(props: Props): JSX.Element {
+  const logger: pino.Logger = pino({
+    level: process.env.LOG_LEVEL || "info",
+  });
+
   const ref = useRef(null) as unknown as React.MutableRefObject<HTMLDivElement>;
 
   const handleNavigation = useCallback(
@@ -19,13 +24,17 @@ export default function Scrollable(props: Props): JSX.Element {
       const window = e.currentTarget as Window;
       if (!window) return;
 
-      const bottomHeight = (ref.current.scrollHeight * 2) / 3;
+      const bottomHeight = ref.current.scrollHeight;
 
-      if (window.scrollY >= bottomHeight) {
+      logger.debug(`bottomHeight: ${bottomHeight}\nscrollY: ${window.scrollY}`);
+
+      const bottomY = window.scrollY + window.innerHeight;
+
+      if (bottomY >= bottomHeight) {
         props.onScrollBottom();
       }
     },
-    [props]
+    [props, logger]
   );
 
   useEffect(() => {
