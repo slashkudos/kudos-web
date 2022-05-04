@@ -2,12 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import FeedCard from "../components/feedCard";
 import useSWR from "swr";
-import {
-  PropsWithChildren,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import HeaderSection from "../components/headerSection";
 import UserSearchButton from "../components/userSearchButton";
 import { useRouter } from "next/router";
@@ -46,7 +41,10 @@ const Feed: NextPage<Props> = () => {
   const getKudosNextPage = async () => {
     if (loadingNextPage || !nextToken) return;
     loadingNextPage = true;
-    const nextKudos = await KudosBrowserService.getKudos(nextToken);
+
+    const nextKudos = searchQuery
+      ? await KudosBrowserService.searchKudos(searchQuery, nextToken)
+      : await KudosBrowserService.getKudos(nextToken);
     const updatedResponse: ListKudosResponse = {
       response: { __typename: "ModelKudoConnection", items: [] },
     };

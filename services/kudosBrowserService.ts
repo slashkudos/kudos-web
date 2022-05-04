@@ -32,17 +32,23 @@ export class KudosBrowserService {
   };
 
   public static async searchKudos(
-    searchValue: string
+    searchValue: string,
+    nextToken?: string | null
   ): Promise<SearchKudosByUserResponse> {
     if (!searchValue) {
       const response = await this.getKudos();
       return response;
     }
-    const url = Utilities.API.kudosSearchUrlAbsolute + "?";
+    const apiUrl = Utilities.API.kudosSearchUrlAbsolute;
     const searchParams = new URLSearchParams({
       username: searchValue,
     });
-    return await this.searchKudosFetcher(url + searchParams.toString());
+    if (nextToken) {
+      searchParams.append("nextToken", nextToken);
+    }
+
+    const fullUrl = apiUrl + "?" + searchParams.toString();
+    return await this.searchKudosFetcher(fullUrl);
   }
 
   public static async searchKudosFetcher(
