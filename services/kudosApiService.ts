@@ -3,7 +3,7 @@ import { KudosApiClient, KudosGraphQLConfig } from "@slashkudos/kudos-api";
 
 export class KudosApiService {
   static logger: pino.Logger = pino({
-    level: process.env.LOG_LEVEL || "info",
+    level: process.env.NEXT_PUBLIC_LOG_LEVEL || "info",
   });
 
   public static async getClient(): Promise<KudosApiClient> {
