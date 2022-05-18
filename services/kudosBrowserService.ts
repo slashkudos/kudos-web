@@ -1,51 +1,57 @@
-import { Kudo } from "@slashkudos/kudos-api";
-import { Dispatch, SetStateAction } from "react";
+import { ListKudosResponse } from "../models/ListKudosResponse";
 import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
 import { Utilities } from "./utilities";
-const logger = require("pino")();
 
 // DO NOT use KudosApiClient or KudosGraphQLConfig, for that use the KudosApiService.ts
 // You will get error related to the fs module missing
 export class KudosBrowserService {
-  public static async getKudos(): Promise<Kudo[]> {
-    const url = Utilities.API.kudosUrlAbsolute;
-    return await KudosBrowserService.getKudosFetcher(url);
+  public static async getKudos(
+    nextToken?: string | null
+  ): Promise<ListKudosResponse> {
+    const apiUrl = Utilities.API.kudosUrlAbsolute;
+    let fullUrl = apiUrl;
+    if (nextToken) {
+      const searchParams = new URLSearchParams({
+        nextToken: nextToken,
+      });
+      fullUrl += "?" + searchParams.toString();
+    }
+    return await KudosBrowserService.getKudosFetcher(fullUrl);
   }
 
   public static getKudosFetcher = async (
     url: string,
-    setKudosDispatcher?: Dispatch<SetStateAction<Kudo[] | undefined>>
-  ): Promise<Kudo[]> => {
-    const response = await fetch(url);
-    const kudos = (await response.json()) as Kudo[];
-    if (setKudosDispatcher) setKudosDispatcher(kudos);
-    return kudos;
+  ): Promise<ListKudosResponse> => {
+    const rawResponse = await fetch(url);
+    const response = (await rawResponse.json()) as ListKudosResponse;
+    return response;
   };
 
   public static async searchKudos(
-    searchValue: string
-  ): Promise<SearchKudosByUserResponse | undefined> {
+    searchValue: string,
+    nextToken?: string | null
+  ): Promise<SearchKudosByUserResponse> {
     if (!searchValue) {
-      const kudos = await this.getKudos();
-      return { result: kudos };
+      const response = await this.getKudos();
+      return response;
     }
-    const url = Utilities.API.kudosSearchUrlAbsolute + "?";
+    const apiUrl = Utilities.API.kudosSearchUrlAbsolute;
     const searchParams = new URLSearchParams({
       username: searchValue,
     });
-    const response = await fetch(url + searchParams.toString());
-    const searchResponse = (await response.json()) as SearchKudosByUserResponse;
-    return searchResponse;
+    if (nextToken) {
+      searchParams.append("nextToken", nextToken);
+    }
+
+    const fullUrl = apiUrl + "?" + searchParams.toString();
+    return await this.searchKudosFetcher(fullUrl);
   }
 
   public static async searchKudosFetcher(
     url: string,
-    setKudosDispatcher?: Dispatch<SetStateAction<Kudo[] | undefined>>
-  ) {
+  ): Promise<SearchKudosByUserResponse> {
     const response = await fetch(url);
     const searchResponse = (await response.json()) as SearchKudosByUserResponse;
-    const kudos = searchResponse.result || [];
-    if (setKudosDispatcher) setKudosDispatcher(kudos);
-    return kudos;
+    return searchResponse;
   }
 }

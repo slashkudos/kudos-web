@@ -1,16 +1,22 @@
-import { Kudo } from "@slashkudos/kudos-api";
-import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
-import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
+import {
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  useState,
+} from "react";
+import { ListKudosResponse } from "../models/ListKudosResponse";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 
 interface Props extends PropsWithChildren<{}> {
   searchQuery?: string;
   dispatchers: {
-    setSearchQueryDispatcher: Dispatch<SetStateAction<string>>;
+    setSearchQueryDispatcher: Dispatch<SetStateAction<string | undefined>>;
     setSearchDisplayMessageDispatcher?: Dispatch<
       SetStateAction<string | undefined>
     >;
-    setResultDispatcher: Dispatch<SetStateAction<Kudo[] | undefined>>;
+    setResultDispatcher: Dispatch<
+      SetStateAction<ListKudosResponse | undefined>
+    >;
   };
 }
 
@@ -21,8 +27,11 @@ export default function UserSearchButton(props: Props): JSX.Element {
     event: React.ChangeEvent<HTMLInputElement>,
     props: Props
   ): Promise<void> => {
-    const { setSearchQueryDispatcher, setSearchDisplayMessageDispatcher, setResultDispatcher } =
-      props.dispatchers;
+    const {
+      setSearchQueryDispatcher,
+      setSearchDisplayMessageDispatcher,
+      setResultDispatcher,
+    } = props.dispatchers;
 
     // Get the search query and execute the search
     const searchQuery = event.target.value;
@@ -41,11 +50,7 @@ export default function UserSearchButton(props: Props): JSX.Element {
         )
       );
     }
-    setResultDispatcher(searchResponse.result);
-    if (searchResponse.result?.length === 0) {
-      setSearchDisplayMessageDispatcher &&
-        setSearchDisplayMessageDispatcher("No kudos found.");
-    }
+    setResultDispatcher(searchResponse);
   };
 
   return (
