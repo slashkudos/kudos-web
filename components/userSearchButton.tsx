@@ -1,11 +1,16 @@
-import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  useState,
+} from "react";
 import { ListKudosResponse } from "../models/ListKudosResponse";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 
 interface Props extends PropsWithChildren<{}> {
   searchQuery?: string;
   dispatchers: {
-    setSearchQueryDispatcher: Dispatch<SetStateAction<string>>;
+    setSearchQueryDispatcher: Dispatch<SetStateAction<string | undefined>>;
     setSearchDisplayMessageDispatcher?: Dispatch<
       SetStateAction<string | undefined>
     >;

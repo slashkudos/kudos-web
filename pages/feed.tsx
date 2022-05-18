@@ -10,7 +10,10 @@ import { Utilities } from "../services/utilities";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 import Scrollable from "../components/scrollable";
 import { ListKudosResponse } from "../models/ListKudosResponse";
-import { SearchKudosByUserResponse } from "./api/kudos/search";
+import pino from "pino";
+const logger: pino.Logger = pino({
+  level: process.env.NEXT_PUBLIC_LOG_LEVEL || "info",
+});
 
 interface Props extends PropsWithChildren<{}> {}
 interface QueryParams {
@@ -20,6 +23,7 @@ interface QueryParams {
 let loadingNextPage = false;
 
 const Feed: NextPage<Props> = () => {
+  logger.debug("Initializing the Feed");
   const router = useRouter();
 
   const queryParams = router.query as QueryParams;
@@ -34,10 +38,15 @@ const Feed: NextPage<Props> = () => {
   const [nextToken, setNextToken] = useState(
     undefined as string | null | undefined
   );
+  const useSearchQuery = useRef(false);
 
-  const firstUpdate = useRef(!searchQueryParam);
-
-  const [searchQuery, setSearchQuery] = useState(searchQueryParam);
+  const [searchQuery, setSearchQuery] = useState(
+    undefined as string | undefined
+  );
+  useEffect(() => {
+    useSearchQuery.current = !!searchQueryParam;
+    setSearchQuery(searchQueryParam);
+  }, [searchQueryParam]);
 
   const getKudosNextPage = async () => {
     if (loadingNextPage || !nextToken) return;
@@ -63,12 +72,6 @@ const Feed: NextPage<Props> = () => {
   };
 
   useEffect(() => {
-    if (!searchQuery) return;
-    firstUpdate.current = true;
-    setSearchQuery(searchQuery);
-  }, [searchQuery]);
-
-  useEffect(() => {
     if (kudosResponse?.result?.length === 0) {
       setSearchDisplayMessage("No kudos found.");
     }
@@ -76,18 +79,15 @@ const Feed: NextPage<Props> = () => {
   }, [kudosResponse]);
 
   let url = Utilities.API.kudosUrlRelative;
-  let fetcher = async (url: string): Promise<ListKudosResponse> => {
-    if (firstUpdate.current) {
-      console.log("Loading most recent kudos...");
-      firstUpdate.current = false;
-      const response = await KudosBrowserService.getKudosFetcher(
-        url,
-        setKudosResponse
-      );
-      return response;
-    } else {
-      return Promise.resolve({});
+  let fetcher = async (url: string): Promise<void> => {
+    logger.debug(`Getting the most recent kudos...`);
+    const response = await KudosBrowserService.getKudosFetcher(url);
+    if (useSearchQuery.current) {
+      logger.debug("Race condition, do not set result from most recent.");
+      return;
     }
+    logger.debug("Setting result from most recent kudos.");
+    setKudosResponse(response);
   };
 
   if (searchQuery) {
@@ -95,24 +95,15 @@ const Feed: NextPage<Props> = () => {
       username: searchQuery,
     });
     url = Utilities.API.kudosSearchUrlRelative + "?" + searchParams.toString();
-    fetcher = async (url: string): Promise<SearchKudosByUserResponse> => {
-      if (firstUpdate.current) {
-        console.log(`Searching for kudos (query="${searchQuery}")...`);
-        firstUpdate.current = false;
-        return await KudosBrowserService.searchKudosFetcher(
-          url,
-          setKudosResponse
-        );
-      } else {
-        return Promise.resolve({});
-      }
+    fetcher = async (url: string): Promise<void> => {
+      logger.debug(`Searching kudos for "${searchQuery}"...`);
+      const response = await KudosBrowserService.searchKudosFetcher(url);
+      logger.debug("Setting result from search.");
+      setKudosResponse(response);
     };
   }
 
-  const listKudosResponse = useSWR<
-    ListKudosResponse | SearchKudosByUserResponse,
-    any
-  >(url, fetcher);
+  const listKudosResponse = useSWR<void, any>(url, fetcher);
 
   if (listKudosResponse.error) return <div>Failed to load</div>;
   if (!kudosResponse) return <div>Loading...</div>;

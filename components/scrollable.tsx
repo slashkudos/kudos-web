@@ -1,4 +1,3 @@
-import pino from "pino";
 import React, {
   PropsWithChildren,
   useCallback,
@@ -12,10 +11,6 @@ interface Props
   }> {}
 
 export default function Scrollable(props: Props): JSX.Element {
-  const logger: pino.Logger = pino({
-    level: process.env.LOG_LEVEL || "info",
-  });
-
   const ref = useRef(null) as unknown as React.MutableRefObject<HTMLDivElement>;
 
   const handleNavigation = useCallback(
