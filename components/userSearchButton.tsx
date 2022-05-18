@@ -1,27 +1,56 @@
-import { PropsWithChildren, useState } from "react";
-import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
+import {
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  useState,
+} from "react";
+import { ListKudosResponse } from "../models/ListKudosResponse";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 
-type OnSearchEventHandler = (
-  searchResponse?: SearchKudosByUserResponse
-) => void;
-
 interface Props extends PropsWithChildren<{}> {
-  initialSearchValue?: string;
-  onSearchEventHandler: OnSearchEventHandler;
+  searchQuery?: string;
+  dispatchers: {
+    setSearchQueryDispatcher: Dispatch<SetStateAction<string | undefined>>;
+    setSearchDisplayMessageDispatcher?: Dispatch<
+      SetStateAction<string | undefined>
+    >;
+    setResultDispatcher: Dispatch<
+      SetStateAction<ListKudosResponse | undefined>
+    >;
+  };
 }
 
 export default function UserSearchButton(props: Props): JSX.Element {
-  const [searchValueState, setSearchValue] = useState(props.initialSearchValue);
+  const [searchQueryState, setSearchQuery] = useState(props.searchQuery);
 
-  const searchForKudosByUser = async (
+  const onSearchInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    onSearchEventHandler: OnSearchEventHandler
+    props: Props
   ): Promise<void> => {
-    const searchValue = (event.target as HTMLInputElement).value;
-    setSearchValue(searchValue);
-    const searchResponse = await KudosBrowserService.searchKudos(searchValue);
-    return onSearchEventHandler(searchResponse);
+    const {
+      setSearchQueryDispatcher,
+      setSearchDisplayMessageDispatcher,
+      setResultDispatcher,
+    } = props.dispatchers;
+
+    // Get the search query and execute the search
+    const searchQuery = event.target.value;
+    setSearchQuery(searchQuery);
+    setSearchQueryDispatcher(searchQuery);
+    const searchResponse = await KudosBrowserService.searchKudos(searchQuery);
+
+    // Set the output states
+    setSearchDisplayMessageDispatcher && setSearchDisplayMessageDispatcher("");
+
+    if (!searchResponse || !searchResponse.result || searchResponse.error) {
+      return (
+        setSearchDisplayMessageDispatcher &&
+        setSearchDisplayMessageDispatcher(
+          "There was an error searching for kudos."
+        )
+      );
+    }
+    setResultDispatcher(searchResponse);
   };
 
   return (
@@ -35,10 +64,8 @@ export default function UserSearchButton(props: Props): JSX.Element {
               placeholder="Search..."
               aria-label="User search"
               aria-describedby="button-addon2"
-              onChange={(e) =>
-                searchForKudosByUser(e, props.onSearchEventHandler)
-              }
-              value={searchValueState}
+              onChange={(e) => onSearchInputChange(e, { ...props })}
+              value={searchQueryState}
             />
             <span
               className="input-group-text flex items-center px-3 py-1.5 text-base font-normal text-gray-700 text-center whitespace-nowrap rounded"

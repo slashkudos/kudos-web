@@ -1,10 +1,11 @@
-import {
-  KudosApiClient,
-  KudosGraphQLConfig,
-} from "@slashkudos/kudos-api";
-const logger = require("pino")();
+import pino from "pino";
+import { KudosApiClient, KudosGraphQLConfig } from "@slashkudos/kudos-api";
 
 export class KudosApiService {
+  static logger: pino.Logger = pino({
+    level: process.env.NEXT_PUBLIC_LOG_LEVEL || "info",
+  });
+
   public static async getClient(): Promise<KudosApiClient> {
     const apiKey = process.env.KUDOS_GRAPHQL_API_KEY;
     const apiUrl = process.env.KUDOS_GRAPHQL_API_URL;
@@ -22,7 +23,7 @@ export class KudosApiService {
     const client = await KudosApiClient.build(config);
 
     const message = `KudosApiClient built (api url: ${apiUrl}`;
-    logger.debug(message);
+    KudosApiService.logger.debug(message);
 
     return client;
   }
