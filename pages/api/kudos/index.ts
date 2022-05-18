@@ -2,6 +2,10 @@ import { Kudo } from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ListKudosResponse } from "../../../models/ListKudosResponse";
 import { KudosApiService } from "../../../services/kudosApiService";
+import pino from "pino";
+const logger: pino.Logger = pino({
+  level: process.env.NEXT_PUBLIC_LOG_LEVEL || "info",
+});
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,6 +17,7 @@ export default async function handler(
     : Number.parseInt(process.env.DEFAULT_FEED_PAGE_SIZE || "25");
 
   const client = await KudosApiService.getClient();
+  logger.debug("Fetching kudos...");
   const kudosConnection = await client.listKudosByDate({
     type: "Kudo",
     limit: pageSize,

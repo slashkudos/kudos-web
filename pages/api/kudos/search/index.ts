@@ -2,6 +2,10 @@ import { Kudo, ModelKudoConnection } from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiResponseResult } from "../../../../models/ApiResponse";
 import { KudosApiService } from "../../../../services/kudosApiService";
+import pino from "pino";
+const logger: pino.Logger = pino({
+  level: process.env.NEXT_PUBLIC_LOG_LEVEL || "info",
+});
 
 export interface SearchKudosByUserResponse
   extends ApiResponseResult<ModelKudoConnection, Kudo[]> {}
@@ -20,6 +24,7 @@ export default async function handler(
   if (!username) {
     return res.status(400).json({ error: "username is required" });
   }
+  logger.debug("Searching for kudos by user: " + username);
   const kudosConnection = await client.searchKudosByUser(
     username,
     pageSize,
