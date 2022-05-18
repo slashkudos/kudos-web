@@ -13,7 +13,7 @@ export default async function handler(
   const username = req.query.username as string;
   const pageSize = req.query.pageSize
     ? Number.parseInt(req.query.pageSize as string)
-    : 25;
+    : Number.parseInt(process.env.DEFAULT_FEED_PAGE_SIZE || "25");
   const nextToken = req.query.nextToken as string | undefined;
 
   const client = await KudosApiService.getClient();

@@ -10,7 +10,7 @@ export default async function handler(
   const nextToken = req.query.nextToken as string | undefined;
   const pageSize = req.query.pageSize
     ? Number.parseInt(req.query.pageSize as string)
-    : 25;
+    : Number.parseInt(process.env.DEFAULT_FEED_PAGE_SIZE || "25");
 
   const client = await KudosApiService.getClient();
   const kudosConnection = await client.listKudosByDate({
