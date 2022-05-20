@@ -49,13 +49,14 @@ export default function Footer(): JSX.Element {
           </div>
         </div>
         <div className="text-center p-6 bg-gray-200">
-          <span>© 2021 Copyright: </span>
+          <span>Copyright © 2022 </span>
           <a
             className="text-gray-600 font-semibold"
             href="https://slashkudos.com/"
           >
             slashkudos
           </a>
+          <span>. All Rights Reserved.</span>
         </div>
       </footer>
     </>

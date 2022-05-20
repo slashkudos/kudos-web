@@ -37,7 +37,6 @@ export default function Navbar(): JSX.Element {
                     <a
                       key={"about"}
                       href={"https://slashkudos.com/"}
-                      target="_blank"
                       rel="noreferrer"
                       className={Utilities.classNames(
                         "text-white hover:bg-primary-700 hover:text-white",
