@@ -1,4 +1,4 @@
-# Slash Kudos Web App
+# slashkudos Web App
 
 The Kudos web app.
 
