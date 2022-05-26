@@ -1,6 +1,6 @@
 # slashkudos Web App
 
-The Kudos web app.
+The slashkudos web app.
 
 ## Quick Reference Guide
 
