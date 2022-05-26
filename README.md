@@ -1,6 +1,4 @@
-# slashkudos Web App
-
-The slashkudos web app.
+# The official slashkudos web app
 
 ## Quick Reference Guide
 
