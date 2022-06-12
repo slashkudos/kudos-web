@@ -1,4 +1,8 @@
-import { Kudo } from "@slashkudos/kudos-api";
+import {
+  GitHubMetadata,
+  Kudo,
+  ModelKudoConnection,
+} from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { KudosApiService } from "../../../../services/kudosApiService";
 import pino from "pino";
@@ -28,7 +32,24 @@ export default async function handler(
     limit: pageSize,
     nextToken,
   });
+  filterKudos(kudosConnection);
   return res
     .status(200)
     .json(new SearchKudosByUserResponse({ response: kudosConnection }));
+}
+
+function filterKudos(kudosConnection: ModelKudoConnection) {
+  kudosConnection.items = kudosConnection.items.filter((item) => {
+    // FIXME: Filter out private repo kudos for now
+    if (item?.dataSourceApp === "github") {
+      if (!item.metadata) return false;
+      try {
+        const metadata = JSON.parse(item.metadata) as GitHubMetadata;
+        return metadata.repositoryPublic;
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  });
 }
