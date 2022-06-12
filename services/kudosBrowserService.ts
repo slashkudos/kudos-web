@@ -1,5 +1,5 @@
 import { ListKudosResponse } from "../models/ListKudosResponse";
-import { SearchKudosByUserResponse } from "../pages/api/kudos/search";
+import { SearchKudosByUserResponse } from "../models/SearchKudosByUserResponse";
 import { Utilities } from "./utilities";
 
 // DO NOT use KudosApiClient or KudosGraphQLConfig, for that use the KudosApiService.ts
@@ -20,7 +20,7 @@ export class KudosBrowserService {
   }
 
   public static getKudosFetcher = async (
-    url: string,
+    url: string
   ): Promise<ListKudosResponse> => {
     const rawResponse = await fetch(url);
     const response = (await rawResponse.json()) as ListKudosResponse;
@@ -48,7 +48,7 @@ export class KudosBrowserService {
   }
 
   public static async searchKudosFetcher(
-    url: string,
+    url: string
   ): Promise<SearchKudosByUserResponse> {
     const response = await fetch(url);
     const searchResponse = (await response.json()) as SearchKudosByUserResponse;

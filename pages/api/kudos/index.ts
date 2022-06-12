@@ -1,4 +1,3 @@
-import { Kudo } from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ListKudosResponse } from "../../../models/ListKudosResponse";
 import { KudosApiService } from "../../../services/kudosApiService";
@@ -23,10 +22,7 @@ export default async function handler(
     limit: pageSize,
     nextToken: nextToken,
   });
-  const kudosResult = kudosConnection.items.filter(
-    (kudo) => kudo != null
-  ) as Kudo[];
   return res
     .status(200)
-    .json({ result: kudosResult, response: kudosConnection });
+    .json(new ListKudosResponse({ response: kudosConnection }));
 }
