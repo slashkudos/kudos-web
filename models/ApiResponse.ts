@@ -1,12 +1,8 @@
-
-export interface ApiResponse<T> {
+export class ApiResponse<T> {
   response?: T;
   error?: string;
-}
-
-
-export interface ApiResponseResult<T, U> {
-  response?: T;
-  result?: U;
-  error?: string;
+  constructor(response: ApiResponse<T>) {
+    this.response = response.response;
+    this.error = response.error;
+  }
 }

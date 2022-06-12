@@ -12,21 +12,25 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
   switch (kudo.dataSourceApp) {
     case "twitter" as DataSourceApp.twitter:
       return <FontAwesomeIcon icon={["fab", "twitter"]} fixedWidth />;
+    case "github" as DataSourceApp.github:
+      return <FontAwesomeIcon icon={["fab", "github"]} fixedWidth />;
     default:
       return <></>;
   }
 };
 
 const getUserImage = (person?: Person | null): JSX.Element => {
-  const imageUrl = person?.profileImageUrl;
+  let imageUrl = person?.profileImageUrl;
   const profileUrl = getUserProfileUrl(person);
 
-  const urlOriginalQuality = imageUrl?.replace("_normal.jpg", ".jpg");
-  if (urlOriginalQuality) {
+  if (person?.dataSourceApp === "twitter") {
+    imageUrl = imageUrl?.replace("_normal.jpg", ".jpg");
+  }
+  if (imageUrl) {
     return (
       <a href={profileUrl} className="pr-2">
         <Image
-          src={urlOriginalQuality}
+          src={imageUrl}
           title={person?.username}
           alt={`${person?.username}'s profile picture`}
           width={50}
@@ -51,6 +55,7 @@ const getUserProfileHyperlink = (person?: Person | null): JSX.Element => {
 
 const getUserProfileUrl = (person?: Person | null): string | undefined => {
   if (!person) return;
+  if (person.profileUrl) return person.profileUrl;
   switch (person.dataSourceApp) {
     case "twitter" as DataSourceApp.twitter:
       return `https://twitter.com/${person.username}`;

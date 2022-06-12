@@ -55,12 +55,14 @@ const Feed: NextPage<Props> = () => {
     const nextKudos = searchQuery
       ? await KudosBrowserService.searchKudos(searchQuery, nextToken)
       : await KudosBrowserService.getKudos(nextToken);
-    const updatedResponse: ListKudosResponse = {
-      response: { __typename: "ModelKudoConnection", items: [] },
-    };
+    const updatedResponse = new ListKudosResponse({
+      response: {
+        __typename: "ModelKudoConnection",
+        items: [],
+      },
+    });
     if (nextKudos.result && kudosResponse?.result && updatedResponse.response) {
       const mergedItems = kudosResponse.result.concat(nextKudos.result);
-      updatedResponse.result = mergedItems;
       updatedResponse.response.items = mergedItems;
       updatedResponse.response.nextToken = nextKudos.response?.nextToken;
     }
@@ -127,7 +129,7 @@ const Feed: NextPage<Props> = () => {
       ></UserSearchButton>
       <Scrollable onScrollBottom={getKudosNextPage}>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          {kudosResponse?.result?.map((kudo, i) => {
+          {kudosResponse?.response?.items?.map((kudo, i) => {
             if (!kudo) return <></>;
             return <FeedCard key={i} kudo={kudo}></FeedCard>;
           })}
