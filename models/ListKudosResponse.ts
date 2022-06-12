@@ -1,4 +1,5 @@
 import { Kudo, ModelKudoConnection } from "@slashkudos/kudos-api";
-import { ApiResponseResult } from "./ApiResponse";
+import { ApiResponse } from "./ApiResponse";
 
-export interface ListKudosResponse extends ApiResponseResult<ModelKudoConnection, Kudo[]> {}
+export class ListKudosResponse extends ApiResponse<ModelKudoConnection> {
+}

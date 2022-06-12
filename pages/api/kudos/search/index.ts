@@ -1,14 +1,15 @@
-import { Kudo, ModelKudoConnection } from "@slashkudos/kudos-api";
+import {
+  GitHubMetadata,
+  Kudo,
+  ModelKudoConnection,
+} from "@slashkudos/kudos-api";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ApiResponseResult } from "../../../../models/ApiResponse";
 import { KudosApiService } from "../../../../services/kudosApiService";
 import pino from "pino";
+import { SearchKudosByUserResponse } from "../../../../models/SearchKudosByUserResponse";
 const logger: pino.Logger = pino({
   level: process.env.NEXT_PUBLIC_LOG_LEVEL || "info",
 });
-
-export interface SearchKudosByUserResponse
-  extends ApiResponseResult<ModelKudoConnection, Kudo[]> {}
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,18 +23,33 @@ export default async function handler(
 
   const client = await KudosApiService.getClient();
   if (!username) {
-    return res.status(400).json({ error: "username is required" });
+    return res
+      .status(400)
+      .json(new SearchKudosByUserResponse({ error: "username is required" }));
   }
   logger.debug("Searching for kudos by user: " + username);
-  const kudosConnection = await client.searchKudosByUser(
-    username,
-    pageSize,
-    nextToken
-  );
-  const kudosResult = kudosConnection.items.filter(
-    (kudo) => kudo != null
-  ) as Kudo[];
+  const kudosConnection = await client.searchKudosByUser(username, {
+    limit: pageSize,
+    nextToken,
+  });
+  filterKudos(kudosConnection);
   return res
     .status(200)
-    .json({ result: kudosResult, response: kudosConnection });
+    .json(new SearchKudosByUserResponse({ response: kudosConnection }));
+}
+
+function filterKudos(kudosConnection: ModelKudoConnection) {
+  kudosConnection.items = kudosConnection.items.filter((item) => {
+    // FIXME: Filter out private repo kudos for now
+    if (item?.dataSourceApp === "github") {
+      if (!item.metadata) return false;
+      try {
+        const metadata = JSON.parse(item.metadata) as GitHubMetadata;
+        return metadata.repositoryPublic;
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  });
 }

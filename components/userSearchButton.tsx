@@ -42,7 +42,7 @@ export default function UserSearchButton(props: Props): JSX.Element {
     // Set the output states
     setSearchDisplayMessageDispatcher && setSearchDisplayMessageDispatcher("");
 
-    if (!searchResponse || !searchResponse.result || searchResponse.error) {
+    if (!searchResponse || !searchResponse.response?.items || searchResponse.error) {
       return (
         setSearchDisplayMessageDispatcher &&
         setSearchDisplayMessageDispatcher(
