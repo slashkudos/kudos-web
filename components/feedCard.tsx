@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DataSourceApp, Kudo, Person } from "@slashkudos/kudos-api";
-import { PropsWithChildren } from "react";
+import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
 import Image from "next/image";
 
 interface Props
@@ -19,7 +19,11 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
   }
 };
 
-const getUserImage = (person?: Person | null): JSX.Element => {
+const getUserImage = (
+  person: Person | null | undefined,
+  profileImageError: boolean,
+  setProfileImageErrorDispatcher: Dispatch<SetStateAction<boolean>>
+): JSX.Element => {
   let imageUrl = person?.profileImageUrl;
   const profileUrl = getUserProfileUrl(person);
 
@@ -28,15 +32,26 @@ const getUserImage = (person?: Person | null): JSX.Element => {
   }
   if (imageUrl) {
     return (
-      <a href={profileUrl} className="pr-2">
-        <Image
-          src={imageUrl}
-          title={person?.username}
-          alt={`${person?.username}'s profile picture`}
-          width={50}
-          height={50}
-          className="rounded-full"
-        ></Image>
+      <a href={profileUrl} className={profileImageError ? "" : "pr-2"}>
+        {profileImageError ? (
+          <FontAwesomeIcon
+            icon={["fas", "face-smile-beam"]}
+            size="3x"
+            fixedWidth
+          />
+        ) : (
+          <Image
+            src={imageUrl}
+            title={person?.username}
+            alt={`${person?.username}'s profile picture`}
+            width={50}
+            height={50}
+            className="rounded-full"
+            onError={(e) => {
+              setProfileImageErrorDispatcher(true);
+            }}
+          ></Image>
+        )}
       </a>
     );
   } else {
@@ -72,18 +87,29 @@ export default function FeedCard(props: Props): JSX.Element {
   });
   const createdDateTime = new Date(kudo.createdAt).toLocaleString();
 
+  const [receiverProfileImageError, setReceiverProfileImageError] =
+    useState(false);
   const receiverHyperlink = getUserProfileHyperlink(kudo.receiver);
-  const receiverImage = getUserImage(kudo.receiver);
+  const receiverImage = getUserImage(
+    kudo.receiver,
+    receiverProfileImageError,
+    setReceiverProfileImageError
+  );
 
+  const [giverProfileImageError, setGiverProfileImageError] = useState(false);
   const giverHyperlink = getUserProfileHyperlink(kudo.giver);
-  const giverImage = getUserImage(kudo.giver);
+  const giverImage = getUserImage(
+    kudo.giver,
+    giverProfileImageError,
+    setGiverProfileImageError
+  );
 
   return (
     <>
       <div className="rounded overflow-hidden shadow-lg mb-4">
         <div>
           <div className="p-6 bg-gray-100 shadow">
-            <div>
+            <div className="flex">
               {receiverImage} {giverImage}
             </div>
             <div className="pt-2">
