@@ -61,8 +61,8 @@ const Feed: NextPage<Props> = () => {
         items: [],
       },
     });
-    if (nextKudos.result && kudosResponse?.result && updatedResponse.response) {
-      const mergedItems = kudosResponse.result.concat(nextKudos.result);
+    if (nextKudos.response?.items && kudosResponse?.response?.items && updatedResponse.response) {
+      const mergedItems = kudosResponse?.response?.items.concat(nextKudos?.response?.items);
       updatedResponse.response.items = mergedItems;
       updatedResponse.response.nextToken = nextKudos.response?.nextToken;
     }
@@ -74,7 +74,7 @@ const Feed: NextPage<Props> = () => {
   };
 
   useEffect(() => {
-    if (kudosResponse?.result?.length === 0) {
+    if (kudosResponse?.response?.items.length === 0) {
       setSearchDisplayMessage("No kudos found.");
     }
     setNextToken(kudosResponse?.response?.nextToken);
