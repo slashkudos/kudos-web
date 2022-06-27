@@ -2,10 +2,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DataSourceApp, Kudo, Person } from "@slashkudos/kudos-api";
 import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
 import Image from "next/image";
+import { Utilities } from "../services/utilities";
 
 interface Props
   extends PropsWithChildren<{
     kudo: Kudo;
+    onUsernameClick: (username: string) => void;
   }> {}
 
 const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
@@ -59,10 +61,18 @@ const getUserImage = (
   }
 };
 
-const getUserProfileHyperlink = (person: Person): JSX.Element => {
-  const link = `?search=${person.username}`;
+const getUserProfileHyperlink = (
+  person: Person,
+  onUsernameClick: (username: string) => void
+): JSX.Element => {
   return (
-    <a className="font-bold" href={link}>
+    <a
+      className="font-bold"
+      href="#"
+      onClick={() => {
+        onUsernameClick(person.username);
+      }}
+    >
       {person?.username}
     </a>
   );
@@ -93,7 +103,10 @@ export default function FeedCard(props: Props): JSX.Element {
 
   const [receiverProfileImageError, setReceiverProfileImageError] =
     useState(false);
-  const receiverHyperlink = getUserProfileHyperlink(receiver);
+  const receiverHyperlink = getUserProfileHyperlink(
+    receiver,
+    props.onUsernameClick
+  );
   const receiverImage = getUserImage(
     receiver,
     receiverProfileImageError,
@@ -101,7 +114,7 @@ export default function FeedCard(props: Props): JSX.Element {
   );
 
   const [giverProfileImageError, setGiverProfileImageError] = useState(false);
-  const giverHyperlink = getUserProfileHyperlink(giver);
+  const giverHyperlink = getUserProfileHyperlink(giver, props.onUsernameClick);
   const giverImage = getUserImage(
     giver,
     giverProfileImageError,
