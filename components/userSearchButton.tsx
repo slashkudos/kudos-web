@@ -1,9 +1,4 @@
-import {
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  useState,
-} from "react";
+import { Dispatch, PropsWithChildren, SetStateAction, useState } from "react";
 import { ListKudosResponse } from "../models/ListKudosResponse";
 import { KudosBrowserService } from "../services/kudosBrowserService";
 
@@ -21,8 +16,6 @@ interface Props extends PropsWithChildren<{}> {
 }
 
 export default function UserSearchButton(props: Props): JSX.Element {
-  const [searchQueryState, setSearchQuery] = useState(props.searchQuery);
-
   const onSearchInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     props: Props
@@ -35,14 +28,17 @@ export default function UserSearchButton(props: Props): JSX.Element {
 
     // Get the search query and execute the search
     const searchQuery = event.target.value;
-    setSearchQuery(searchQuery);
     setSearchQueryDispatcher(searchQuery);
     const searchResponse = await KudosBrowserService.searchKudos(searchQuery);
 
     // Set the output states
     setSearchDisplayMessageDispatcher && setSearchDisplayMessageDispatcher("");
 
-    if (!searchResponse || !searchResponse.response?.items || searchResponse.error) {
+    if (
+      !searchResponse ||
+      !searchResponse.response?.items ||
+      searchResponse.error
+    ) {
       return (
         setSearchDisplayMessageDispatcher &&
         setSearchDisplayMessageDispatcher(
@@ -65,7 +61,7 @@ export default function UserSearchButton(props: Props): JSX.Element {
               aria-label="User search"
               aria-describedby="button-addon2"
               onChange={(e) => onSearchInputChange(e, { ...props })}
-              value={searchQueryState}
+              value={props.searchQuery}
             />
             <span
               className="input-group-text flex items-center px-3 py-1.5 text-base font-normal text-gray-700 text-center whitespace-nowrap rounded"

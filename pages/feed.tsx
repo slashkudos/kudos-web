@@ -47,6 +47,18 @@ const Feed: NextPage<Props> = () => {
     useSearchQuery.current = !!searchQueryParam;
     setSearchQuery(searchQueryParam);
   }, [searchQueryParam]);
+  useEffect(() => {
+    let nextUrl = Utilities.API.baseUrl;
+    if (searchQuery) {
+      nextUrl += `?search=${searchQuery}`;
+    }
+    const nextTitle = "";
+    const nextState = {
+      additionalInformation: "Updating search query parameter",
+    };
+    // This will create a new entry in the browser's history, without reloading
+    window.history.pushState(nextState, nextTitle, nextUrl);
+  }, [searchQuery]);
 
   const getKudosNextPage = async () => {
     if (loadingNextPage || !nextToken) return;
@@ -61,8 +73,14 @@ const Feed: NextPage<Props> = () => {
         items: [],
       },
     });
-    if (nextKudos.response?.items && kudosResponse?.response?.items && updatedResponse.response) {
-      const mergedItems = kudosResponse?.response?.items.concat(nextKudos?.response?.items);
+    if (
+      nextKudos.response?.items &&
+      kudosResponse?.response?.items &&
+      updatedResponse.response
+    ) {
+      const mergedItems = kudosResponse?.response?.items.concat(
+        nextKudos?.response?.items
+      );
       updatedResponse.response.items = mergedItems;
       updatedResponse.response.nextToken = nextKudos.response?.nextToken;
     }
@@ -110,6 +128,12 @@ const Feed: NextPage<Props> = () => {
   if (listKudosResponse.error) return <div>Failed to load</div>;
   if (!kudosResponse) return <div>Loading...</div>;
 
+  const userSearchButtonDispatchers = {
+    setSearchQueryDispatcher: setSearchQuery,
+    setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
+    setResultDispatcher: setKudosResponse,
+  };
+
   return (
     <>
       <Head>
@@ -121,17 +145,21 @@ const Feed: NextPage<Props> = () => {
       <HeaderSection title="Recent kudos" />
       <UserSearchButton
         searchQuery={searchQuery}
-        dispatchers={{
-          setSearchQueryDispatcher: setSearchQuery,
-          setSearchDisplayMessageDispatcher: setSearchDisplayMessage,
-          setResultDispatcher: setKudosResponse,
-        }}
+        dispatchers={userSearchButtonDispatchers}
       ></UserSearchButton>
       <Scrollable onScrollBottom={getKudosNextPage}>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           {kudosResponse?.response?.items?.map((kudo, i) => {
             if (!kudo) return <></>;
-            return <FeedCard key={i} kudo={kudo}></FeedCard>;
+            return (
+              <FeedCard
+                key={i}
+                kudo={kudo}
+                onUsernameClick={(username: string) => {
+                  setSearchQuery(username);
+                }}
+              ></FeedCard>
+            );
           })}
           {searchDisplayMessageState}
         </div>
