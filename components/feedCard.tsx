@@ -20,7 +20,7 @@ const getSourceAppIcon = (kudo: Kudo): JSX.Element => {
 };
 
 const getUserImage = (
-  person: Person | null | undefined,
+  person: Person,
   profileImageError: boolean,
   setProfileImageErrorDispatcher: Dispatch<SetStateAction<boolean>>
 ): JSX.Element => {
@@ -59,16 +59,16 @@ const getUserImage = (
   }
 };
 
-const getUserProfileHyperlink = (person?: Person | null): JSX.Element => {
-  const profileUrl = getUserProfileUrl(person);
+const getUserProfileHyperlink = (person: Person): JSX.Element => {
+  const link = `?search=${person.username}`;
   return (
-    <a className="font-bold" href={profileUrl}>
+    <a className="font-bold" href={link}>
       {person?.username}
     </a>
   );
 };
 
-const getUserProfileUrl = (person?: Person | null): string | undefined => {
+const getUserProfileUrl = (person: Person): string | undefined => {
   if (!person) return;
   if (person.profileUrl) return person.profileUrl;
   switch (person.dataSourceApp) {
@@ -79,6 +79,10 @@ const getUserProfileUrl = (person?: Person | null): string | undefined => {
 
 export default function FeedCard(props: Props): JSX.Element {
   const kudo = props.kudo;
+  const { receiver, giver } = kudo;
+  if (!receiver || !giver) {
+    throw new Error("Kudo must have receiver and giver");
+  }
   const sourceAppIcon = getSourceAppIcon(kudo);
   const createdDate = new Date(kudo.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -89,17 +93,17 @@ export default function FeedCard(props: Props): JSX.Element {
 
   const [receiverProfileImageError, setReceiverProfileImageError] =
     useState(false);
-  const receiverHyperlink = getUserProfileHyperlink(kudo.receiver);
+  const receiverHyperlink = getUserProfileHyperlink(receiver);
   const receiverImage = getUserImage(
-    kudo.receiver,
+    receiver,
     receiverProfileImageError,
     setReceiverProfileImageError
   );
 
   const [giverProfileImageError, setGiverProfileImageError] = useState(false);
-  const giverHyperlink = getUserProfileHyperlink(kudo.giver);
+  const giverHyperlink = getUserProfileHyperlink(giver);
   const giverImage = getUserImage(
-    kudo.giver,
+    giver,
     giverProfileImageError,
     setGiverProfileImageError
   );
